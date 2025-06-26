@@ -1,18 +1,6 @@
-## **mock-box - Open Source API Mock Server Generator**
-
-**mock-box** is a transparent, minimal, and hackable tool for generating mock servers from API specifications.
-It enables developers and planners to visually define API contracts and export runnable mock server executables, with no cloud lock-in or proprietary barriers.
-
-mock-box emphasizes local-first development, simplicity, and community-driven extensibility.
-
----
-
-## **README.md**
-
-````markdown
 # mock-box
 
-Open Source API Mock Server Generator - Simple. Transparent. Portable.
+**Open Source API Mock Server Generator - Simple. Transparent. Portable.**
 
 mock-box is a desktop tool that lets you define RESTful API specifications through an intuitive interface and instantly generate executable mock servers.  
 It provides a lightweight, local-first alternative to proprietary mock platforms, ideal for rapid prototyping, testing, and frontend-backend decoupling.
