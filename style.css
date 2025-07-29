@@ -1,0 +1,69 @@
+/* CSS 디자인 스타일 */
+
+body {
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 사이드바 */
+.sidebar {
+  background: #2c3e50;
+  width: 200px;
+  padding: 20px;
+  color: white;
+}
+
+.sidebar a.active { color: #1abc9c; font-weight: bold; }
+
+/* 메인 */
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단바 */
+.topbar {
+  background: white;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+}
+
+.content {
+  padding-top: 40px;
+}
+
+/* 입력 폼 영역 */
+.form-card {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+label { font-weight: bold; margin-top: 15px; display: block; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background: #1abc9c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+

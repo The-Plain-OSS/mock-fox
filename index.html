@@ -1,0 +1,56 @@
+<!-- HTML 구조 (폼, 버튼, UI 요소) -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>mock-box Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+  <body>
+
+  <!-- 왼쪽 사이드바 -->
+  <nav class="sidebar">
+    <h2>mock-box</h2>
+    <a class="active">Dashboard</a>
+    <a>Orders</a> ...
+  </nav>
+
+  <!-- 오른쪽 메인 콘텐츠 -->
+  <main class="main">
+    
+    <!-- 상단바 -->
+    <header class="topbar">
+      <div><strong>Mock Box</strong></div>
+      <button>Import CSV</button>
+    </header>
+
+    <!-- 본문 영역 -->
+    <section class="content">
+      <form class="form-card">
+        <h3>API 명세 작성</h3>
+
+        <label for="endpoint">API Endpoint</label>
+        <input type="text" id="endpoint" placeholder="/api/v1/user" />
+
+        <label for="method">HTTP Method</label>
+        <select id="method">
+          <option>GET</option><option>POST</option>...
+        </select>
+
+        <label for="query">Query Parameters</label>
+        <input type="text" id="query" placeholder="id=123" />
+
+        <label for="requestBody">Request Body (JSON)</label>
+        <textarea id="requestBody">{ "name": "Alice" }</textarea>
+
+        <!-- 버튼 -->
+        <div class="button-bar">
+          <button id="saveBtn">Save</button>
+          <button id="buildBtn">Build</button>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+
