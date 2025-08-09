@@ -1,56 +1,89 @@
-<!-- HTML 구조 (폼, 버튼, UI 요소) -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>mock-box Dashboard</title>
-  <link rel="stylesheet" href="style.css"/>
-  <body>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen m-0 font-sans">
 
   <!-- 왼쪽 사이드바 -->
-  <nav class="sidebar">
-    <h2>mock-box</h2>
-    <a class="active">Dashboard</a>
-    <a>Orders</a> ...
+  <nav class="bg-[#2c3e50] w-[200px] p-5 text-white">
+    <h2 class="text-xl font-bold mb-6">mock-box</h2>
+    <a class="block mb-2 text-[#1abc9c] font-bold cursor-pointer">Dashboard</a>
+    <a class="block mb-2 hover:text-[#1abc9c] cursor-pointer">Orders</a>
+    <!-- ... -->
   </nav>
 
   <!-- 오른쪽 메인 콘텐츠 -->
-  <main class="main">
-    
+  <main class="flex flex-col flex-1">
+
     <!-- 상단바 -->
-    <header class="topbar">
+    <header class="bg-white px-8 py-4 shadow flex justify-between items-center">
       <div><strong>Mock Box</strong></div>
-      <button>Import CSV</button>
+      <button class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90">
+        Import CSV
+      </button>
     </header>
 
     <!-- 본문 영역 -->
-    <section class="content">
-      <form class="form-card">
-        <h3>API 명세 작성</h3>
+    <section class="pt-10">
+      <form class="max-w-[600px] mx-auto bg-white rounded-lg p-5 shadow">
+        <h3 class="text-lg font-semibold mb-4">API 명세 작성</h3>
 
-        <label for="endpoint">API Endpoint</label>
-        <input type="text" id="endpoint" placeholder="/api/v1/user" />
+        <label for="endpoint" class="font-bold mt-4 block">API Endpoint</label>
+        <input
+          type="text"
+          id="endpoint"
+          placeholder="/api/v1/user"
+          class="w-full p-2 mt-1 border border-gray-300 rounded"
+        />
 
-        <label for="method">HTTP Method</label>
-        <select id="method">
-          <option>GET</option><option>POST</option>...
+        <label for="method" class="font-bold mt-4 block">HTTP Method</label>
+        <select
+          id="method"
+          class="w-full p-2 mt-1 border border-gray-300 rounded"
+        >
+          <option>GET</option>
+          <option>POST</option>
+          <!-- ... -->
         </select>
 
-        <label for="query">Query Parameters</label>
-        <input type="text" id="query" placeholder="id=123" />
+        <label for="query" class="font-bold mt-4 block">Query Parameters</label>
+        <input
+          type="text"
+          id="query"
+          placeholder="id=123"
+          class="w-full p-2 mt-1 border border-gray-300 rounded"
+        />
 
-        <label for="requestBody">Request Body (JSON)</label>
-        <textarea id="requestBody">{ "name": "Alice" }</textarea>
+        <label for="requestBody" class="font-bold mt-4 block">Request Body (JSON)</label>
+        <textarea
+          id="requestBody"
+          class="w-full p-2 mt-1 border border-gray-300 rounded"
+        >{ "name": "Alice" }</textarea>
 
         <!-- 버튼 -->
-        <div class="button-bar">
-          <button id="saveBtn">Save</button>
-          <button id="buildBtn">Build</button>
+        <div class="flex justify-end mt-6">
+          <button
+            id="saveBtn"
+            type="button"
+            class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90"
+          >
+            Save
+          </button>
+          <button
+            id="buildBtn"
+            type="button"
+            class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90 ml-3"
+          >
+            Build
+          </button>
         </div>
       </form>
     </section>
   </main>
+
   <script src="renderer.js"></script>
 </body>
-
+</html>

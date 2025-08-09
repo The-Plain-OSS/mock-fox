@@ -24,6 +24,10 @@ document.getElementById("saveBtn").addEventListener("click", () => {
   window.api.send("save-spec", data);
 });
 
+
+/**
+  * go로 해당 프로젝트의 api를 목서버로 전환
+ */
 document.getElementById("buildBtn").addEventListener("click", () => {
   alert("Go 빌드 실행 요청됨!");
 });
