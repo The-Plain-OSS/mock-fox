@@ -1,78 +1,101 @@
 # mock-box
 
-**Open Source API Mock Server Generator - Simple. Transparent. Portable.**
+**오픈소스 API 명세 & Mock 서버 생성기입니다.**
 
-mock-box is a desktop tool that lets you define RESTful API specifications through an intuitive interface and instantly generate executable mock servers.  
-It provides a lightweight, local-first alternative to proprietary mock platforms, ideal for rapid prototyping, testing, and frontend-backend decoupling.
+mock-box는 기획자, 디자이너, 개발자 누구나 **한눈에 이해할 수 있는 직관적인 인터페이스**를 통해  
+RESTful API 명세를 작성하고, 단 한 번의 클릭으로 **실행 가능한 Mock 서버**를 만들어주는  
+**로컬 퍼스트(Local-first)** 데스크톱 애플리케이션입니다.
 
-## Features
+코드 작성 없이도 API 스펙을 시각적으로 설계하고, 즉시 동작하는 서버를 생성해  
+**프로토타이핑, 테스트, 프론트-백엔드 분리 개발**을 빠르고 간단하게 진행할 수 있습니다.
 
-- Cross-platform desktop application (Electron)
-- One-click generation of runnable mock servers (Go-based, compiled)
-- Outputs standalone executables for Windows, macOS, and Linux
-- Visual editor for API endpoints, request/response definitions
-- No runtime dependencies; executables run independently
-- Designed for developers, planners, testers, and technical teams
-- Minimal, hackable, and community-extensible architecture
-- Fully offline operation; no external services required
+---
 
-## Installation
+## 주요 기능
 
-Download pre-built binaries from the [Releases](https://github.com/your-org/mock-box/releases) page.
+- **한 번의 클릭**으로 실행 가능한 Mock 서버 생성 (Go 기반 컴파일)
+- **HTML 명세서 내보내기** – 문서 공유용 API 스펙 HTML 자동 생성
+- **독립 실행 파일 출력** – 배포 후 별도 런타임 없이 즉시 실행 가능
+- **프로젝트 관리** – 좌측 사이드바에서 프로젝트 이름, 버전, 엔드포인트 목록 관리
+- **직관적 엔드포인트 편집기** – 우측 화면에서 단일 엔드포인트 설정 집중
+- **크로스 플랫폼** 지원 – macOS, Windows, Linux
+- **초보자 친화 UI** – JSON 기반 입력만으로 간단하게 명세 작성
+- 100% **오프라인 동작** – 외부 서비스 의존 없음
 
-To build from source:
+---
 
-### Requirements
+## 설치 방법
 
-- Go 1.22 or later
-- Node.js (for development environment)
-- Electron
+### 사전 빌드된 바이너리 다운로드
 
-### Build Steps
+[Releases](https://github.com/your-org/mock-box/releases) (준비 중입니다.) 페이지에서  
+운영체제에 맞는 실행 파일을 내려받아 바로 실행하세요.
+
+### 소스코드에서 빌드
+
+#### 요구 사항
+
+- **Go** 1.22 이상
+- **Node.js** 최신 LTS 버전
+- **Electron** (개발 환경용)
+
+#### electron 빌드 명령
 
 ```bash
 git clone https://github.com/your-org/mock-box.git
 cd mock-box
 npm install
-npm run dev
-````
-
-## Usage
-
-1. Launch mock-box
-2. Define API specifications via the visual interface
-3. Export a compiled mock server executable
-4. Run the executable locally to simulate the API
-
-Example:
-
-```bash
-./my-mock-server
-Server running at http://localhost:8080
+npm start
 ```
 
-## Philosophy
+---
 
-* Open source by default
-* Local-first, offline capable
-* Minimal dependencies
-* Transparent, extensible design
-* Avoid vendor lock-in
+## 사용법
 
-mock-box aims to empower developers with accessible tools for API prototyping, without complex environments or closed ecosystems.
+1. **mock-box 실행**
+2. **좌측 사이드바**에서 프로젝트 이름과 버전, 엔드포인트 목록 관리
+3. **우측 패널**에서 선택한 엔드포인트의 메서드, 경로, 설명, Query, Body, Header, 응답(JSON) 설정
+4. **Mock 서버 생성** 또는 **HTML 명세서 내보내기** 버튼 클릭
+5. 생성된 Mock 서버 실행
 
-## Technical Stack
+---
 
-* Electron (Desktop UI)
-* Go (Mock server runtime)
-* HTML/CSS/JavaScript (Frontend)
+## 왜 이걸 만들었나요?
 
-## License
+- **누구나 사용할 수 있는 API/목서버 작성 도구**
+- **로컬 퍼스트(Local-first)** – 네트워크 없이도 100% 동작
+- **단순성** – 불필요한 복잡성 제거, 직관적인 UI 제공
 
-mock-box is released under the MIT License. See [LICENSE](LICENSE) for details.
+mock-box는 복잡한 환경이나 폐쇄적인 SaaS 없이도
+누구나 쉽게 API 프로토타입을 만들고 공유할 수 있도록 설계되었습니다. 프로젝트 시작 전, 기획자-FE 개발자-BE 개발자 간의 mock server 제작 / api 명세 작성에 큰 편리를 가져다 줄 것이라 믿습니다.
 
-## Contributing
+---
 
-Community contributions are welcome. To report issues, request features, or submit pull requests, please use the GitHub repository.
+## 기술 스택
 
-mock-box is developed in the spirit of open collaboration. Suggestions, improvements, and forks are encouraged.
+- **Electron** – 데스크톱 UI
+- **Go** – Mock 서버 런타임
+- **HTML / CSS / JavaScript** – 프론트엔드 UI
+- **Tailwind CSS** – UI 스타일링
+
+---
+
+## 라이선스
+
+MIT License
+자세한 내용은 [LICENSE](LICENSE) 파일 참조
+
+---
+
+## 기여 방법
+
+mock-box는 열린 협업을 지향합니다.
+이슈 보고, 기능 제안, PR 제출 모두 환영합니다.
+
+1. 이슈 또는 기능 요청 작성
+2. Fork → 브랜치 생성 → 수정 → PR
+3. 코드 리뷰 후 병합
+
+---
+
+> **mock-box** – 기획부터 개발까지, API/Mock server 설계 및 개발의 장벽을 없애다.
