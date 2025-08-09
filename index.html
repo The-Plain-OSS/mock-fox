@@ -1,89 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>mock-box Dashboard</title>
+  <meta charset="utf-8" />
+  <title>API Spec Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: "#f6f9ff",
+              100: "#eef3ff",
+              200: "#dbe6ff",
+              300: "#b9ceff",
+              400: "#8cabff",
+              500: "#5c85ff",
+              600: "#3a64f5",
+              700: "#2a4cd1",
+              800: "#223ea8",
+              900: "#1f377f"
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="flex h-screen m-0 font-sans">
+<body class="bg-neutral-50 text-neutral-900">
+  <div class="min-h-screen grid grid-cols-1 md:grid-cols-[320px_1fr]">
+    <!-- Sidebar -->
+    <aside class="bg-white border-r border-neutral-200 flex flex-col">
+      <div class="p-4">
+        <h1 class="text-lg font-semibold tracking-tight">API Spec Builder</h1>
+        <p class="text-xs text-neutral-500">기획·프론트·백엔드 공동 작업</p>
 
-  <!-- 왼쪽 사이드바 -->
-  <nav class="bg-[#2c3e50] w-[200px] p-5 text-white">
-    <h2 class="text-xl font-bold mb-6">mock-box</h2>
-    <a class="block mb-2 text-[#1abc9c] font-bold cursor-pointer">Dashboard</a>
-    <a class="block mb-2 hover:text-[#1abc9c] cursor-pointer">Orders</a>
-    <!-- ... -->
-  </nav>
-
-  <!-- 오른쪽 메인 콘텐츠 -->
-  <main class="flex flex-col flex-1">
-
-    <!-- 상단바 -->
-    <header class="bg-white px-8 py-4 shadow flex justify-between items-center">
-      <div><strong>Mock Box</strong></div>
-      <button class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90">
-        Import CSV
-      </button>
-    </header>
-
-    <!-- 본문 영역 -->
-    <section class="pt-10">
-      <form class="max-w-[600px] mx-auto bg-white rounded-lg p-5 shadow">
-        <h3 class="text-lg font-semibold mb-4">API 명세 작성</h3>
-
-        <label for="endpoint" class="font-bold mt-4 block">API Endpoint</label>
-        <input
-          type="text"
-          id="endpoint"
-          placeholder="/api/v1/user"
-          class="w-full p-2 mt-1 border border-gray-300 rounded"
-        />
-
-        <label for="method" class="font-bold mt-4 block">HTTP Method</label>
-        <select
-          id="method"
-          class="w-full p-2 mt-1 border border-gray-300 rounded"
-        >
-          <option>GET</option>
-          <option>POST</option>
-          <!-- ... -->
-        </select>
-
-        <label for="query" class="font-bold mt-4 block">Query Parameters</label>
-        <input
-          type="text"
-          id="query"
-          placeholder="id=123"
-          class="w-full p-2 mt-1 border border-gray-300 rounded"
-        />
-
-        <label for="requestBody" class="font-bold mt-4 block">Request Body (JSON)</label>
-        <textarea
-          id="requestBody"
-          class="w-full p-2 mt-1 border border-gray-300 rounded"
-        >{ "name": "Alice" }</textarea>
-
-        <!-- 버튼 -->
-        <div class="flex justify-end mt-6">
-          <button
-            id="saveBtn"
-            type="button"
-            class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90"
-          >
-            Save
-          </button>
-          <button
-            id="buildBtn"
-            type="button"
-            class="bg-[#1abc9c] text-white px-4 py-2 rounded hover:opacity-90 ml-3"
-          >
-            Build
-          </button>
+        <!-- 프로젝트 메타: 좌측에서 관리 -->
+        <div class="mt-4 space-y-3">
+          <div>
+            <label class="block text-xs text-neutral-500 mb-1">프로젝트 이름</label>
+            <input id="projectName" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="예) Shopping App API" />
+          </div>
+          <div>
+            <label class="block text-xs text-neutral-500 mb-1">버전</label>
+            <input id="projectVersion" class="w-32 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="v1.0.0" />
+          </div>
+          <div id="projectMeta" class="text-xs text-neutral-500"></div>
         </div>
-      </form>
-    </section>
-  </main>
 
-  <script src="renderer.js"></script>
+        <!-- 좌측 메인 액션 -->
+        <div class="mt-4 grid gap-2">
+          <button id="exportHtmlBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 hover:bg-neutral-50">명세서 HTML로 내보내기</button>
+          <button id="buildBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">Mock 서버 생성하기</button>
+          <button id="newProjectBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 hover:bg-neutral-50">새 프로젝트</button>
+        </div>
+      </div>
+
+      <!-- 검색 -->
+      <div class="px-4 pb-3">
+        <label class="block text-xs text-neutral-500 mb-1">검색</label>
+        <input id="searchInput" type="search" placeholder="엔드포인트, 설명" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+      </div>
+           <!-- 엔드포인트 추가 -->
+      <div class="p-4 border-t border-neutral-100">
+        <button id="addEndpointBtn" class="w-full rounded-xl px-3 py-2 text-sm bg-neutral-900 text-white hover:bg-neutral-800">+ 엔드포인트 추가</button>
+      </div>
+
+      <!-- 엔드포인트 목록 -->
+      <nav id="endpointList" class="px-2 overflow-y-auto grow divide-y divide-neutral-100"></nav>
+
+ 
+    </aside>
+
+    <!-- Main: 엔드포인트 상세 (JSON 전용) -->
+    <main class="p-6 md:p-10">
+      <section class="mb-6 flex items-center justify-between">
+        <h2 class="text-base font-semibold">엔드포인트 설정</h2>
+        <div class="flex gap-2">
+          <button id="saveBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">저장</button>
+          <button id="deleteEndpointBtn" class="rounded-xl px-3 py-2 text-sm border border-red-200 text-red-600 hover:bg-red-50">삭제</button>
+        </div>
+      </section>
+
+      <!-- 기본 정보 -->
+      <section class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 mb-6">
+        <div class="flex items-center gap-3">
+          <select id="method" class="w-28 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300">
+            <option>GET</option><option>POST</option><option>PUT</option>
+            <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
+          </select>
+          <input id="endpoint" class="flex-1 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="/users/:id" />
+        </div>
+        <div class="mt-3">
+          <label class="block text-xs text-neutral-500 mb-1">설명</label>
+          <input id="description" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="이 API가 무엇을 하는지 쉽게 설명" />
+        </div>
+      </section>
+
+      <!-- JSON 입력 영역 -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 왼쪽: 요청 관련 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs text-neutral-500">Query (JSON)</label>
+              <button id="fillQuerySample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+            </div>
+            <textarea id="query" rows="6" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"page":1,"q":"car"}'></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs text-neutral-500">Headers (JSON)</label>
+              <button id="fillHeadersSample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+            </div>
+            <textarea id="headers" rows="4" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"Content-Type":"application/json","Authorization":"Bearer <token>"}'></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs text-neutral-500">Request Body (JSON)</label>
+              <button id="fillBodySample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+            </div>
+            <textarea id="requestBody" rows="8" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"name":"Alice"}'></textarea>
+          </div>
+        </div>
+
+        <!-- 오른쪽: 응답 관련 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 space-y-4">
+          <div class="flex items-center gap-2">
+            <label class="block text-xs text-neutral-500 w-24">Response Code</label>
+            <select id="responseStatus" class="rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 w-32">
+              <option>200</option><option>201</option><option>204</option>
+              <option>400</option><option>401</option><option>403</option><option>404</option>
+              <option>500</option>
+            </select>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs text-neutral-500">Response (JSON)</label>
+              <button id="fillResponseSample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+            </div>
+            <textarea id="responseBody" rows="8" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"id":1,"name":"Alice"}'></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- cURL 미리보기 -->
+      <section class="mt-6 bg-white rounded-2xl shadow-sm border border-neutral-200 p-5">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-neutral-600">cURL 미리보기</div>
+          <button id="copyCurlBtn" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">복사</button>
+        </div>
+        <pre id="curlPreview" class="mt-2 p-3 bg-neutral-50 rounded-xl text-xs overflow-x-auto"></pre>
+      </section>
+    </main>
+  </div>
+
+  <!-- 모듈 스크립트 -->
+  <script type="module" src="./js/main.js"></script>
 </body>
 </html>
