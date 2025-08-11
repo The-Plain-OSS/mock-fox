@@ -53,13 +53,33 @@ async function boot() {
       downloadFile(`${toSafeFilename(project.name || "api-spec")}.html`, html, "text/html");
     });
 
-
     /**
-     * TODO: api 목서버 생성하여 설치하는 함수. go와 연동하여 구현 예정임.
+     * mock-server 빌드 요청
      */
     $("buildBtn").addEventListener("click", () => {
-      alert("Mock 서버 빌드 요청됨! (추후 구현 예정임)");
-      ipc.send("build-mock", { projectId: project.id, endpoints: project.endpoints });
+      if (!project?.endpoints?.length) {
+        alert("엔드포인트가 없습니다. 먼저 하나 이상 추가하세요.");
+        return;
+      }
+      console.log("[renderer] build-mock request:", { projectId: project.id, endpoints: project.endpoints });
+      ipc.send("build-mock", { projectId: project.id, endpoints: project.endpoints, projectName: project.name || "mock-server" });
+      $("buildBtn").disabled = true;
+      $("buildBtn").textContent = "빌드 중...";
+      setTimeout(() => { // UX용 보호 타이머
+        if ($("buildBtn").disabled) $("buildBtn").textContent = "빌드 중...(잠시만)";
+      }, 1500);
+    });
+
+    // 빌드 결과 수신
+    ipc.on("build-mock:done", (res) => {
+      console.log("[renderer] build-mock:done", res);
+      $("buildBtn").disabled = false;
+      $("buildBtn").textContent = "Mock 서버 빌드";
+      if (!res?.ok) {
+        alert("빌드 실패: " + (res?.err || "알 수 없는 오류"));
+        return;
+      }
+      alert(`빌드 성공!\n저장 위치: ${res.path}`);
     });
 
     $("newProjectBtn").addEventListener("click", () => {
@@ -256,20 +276,6 @@ async function boot() {
         $("copyCurlBtn").textContent = "복사됨!";
         setTimeout(() => ($("copyCurlBtn").textContent = "복사"), 800);
       });
-    });
-
-    // 샘플 채우기 (초보자용)
-    $("fillQuerySample").addEventListener("click", () => {
-      $("query").value = JSON.stringify({ page: 1, q: "car" }, null, 2);
-    });
-    $("fillHeadersSample").addEventListener("click", () => {
-      $("headers").value = JSON.stringify({ "Content-Type": "application/json" }, null, 2);
-    });
-    $("fillBodySample").addEventListener("click", () => {
-      $("requestBody").value = JSON.stringify({ name: "Alice" }, null, 2);
-    });
-    $("fillResponseSample").addEventListener("click", () => {
-      $("responseBody").value = JSON.stringify({ id: 1, name: "Alice" }, null, 2);
     });
 
     // 초기 렌더
