@@ -11,9 +11,9 @@
       "dist/**"
     ],
     "extraResources": [
-      { "from": "resources/go/windows-amd64", "to": "resources/go/windows-amd64", "platform": "win", "filter": ["**/*"] },
-      { "from": "resources/go/darwin-amd64",  "to": "resources/go/darwin-amd64",  "platform": "mac", "filter": ["**/*"] },
-      { "from": "resources/go/darwin-arm64",  "to": "resources/go/darwin-arm64",  "platform": "mac", "filter": ["**/*"] }
+      { "from": "resources/windows-amd64", "to": "resources/windows-amd64", "platform": "win", "filter": ["**/*"] },
+      { "from": "resources/darwin-amd64",  "to": "resources/darwin-amd64",  "platform": "mac", "filter": ["**/*"] },
+      { "from": "resources/darwin-arm64",  "to": "resources/darwin-arm64",  "platform": "mac", "filter": ["**/*"] }
     ],
     "mac": { "target": ["dmg"], "artifactName": "${productName}-${version}-mac-${arch}.${ext}" },
     "win": { "target": ["nsis"], "artifactName": "${productName}-${version}-win-${arch}.${ext}" }
