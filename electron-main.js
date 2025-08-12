@@ -21,7 +21,102 @@ function createWindow() {
   win.loadFile("index.html");
 }
 
-app.whenReady().then(createWindow);
+let descriptionWindow;
+
+function createDescriptionWindow() {
+  // 주석: 현재 열려있는 모든 창 목록에서 첫 번째 창을 메인 윈도우로 간주합니다.
+  const mainWindow = BrowserWindow.getAllWindows()[0];
+
+  descriptionWindow = new BrowserWindow({
+    width: 700,
+    height: 650,
+    modal: true,
+    parent: mainWindow, // 이렇게 찾아온 메인 윈도우를 부모로 설정합니다.
+    frame: false,
+    transparent: true,
+    autoHideMenuBar: true,
+    resizable: false,
+    webPreferences: {
+      // 메인 창과 동일한 보안 설정을 사용합니다.
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(__dirname, "preload.cjs"),
+    },
+  });
+
+  descriptionWindow.loadFile(path.join(__dirname, 'description.html'));
+
+  descriptionWindow.on('closed', () => {
+    descriptionWindow = null;
+  });
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+  // IPC 리스너 
+  
+  /* --------- 3) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출) --------- */
+  // linux 비지원: 안전하게 차단
+  ipcMain.on("build-mock", async (event, payload) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    try {
+      if (process.platform !== "win32" && process.platform !== "darwin") {
+        event.sender.send("build-mock:done", { ok: false, err: "현재 OS는 지원하지 않습니다." });
+        return;
+      }
+
+      const projectName = payload?.projectName || "mock-server";
+      const endpoints = payload?.endpoints || [];
+
+      // 저장 위치 먼저 물어봄
+      const targetOS = process.platform === "win32" ? "windows" : "darwin";
+      const targetArch = process.arch === "arm64" ? "arm64" : "amd64";
+      const defaultName = projectName + (targetOS === "windows" ? ".exe" : "");
+      const { canceled, filePath } = await dialog.showSaveDialog(win, {
+        title: "생성된 실행 파일 저장",
+        defaultPath: defaultName,
+      });
+
+      if (canceled || !filePath) {
+        event.sender.send("build-mock:done", { ok: false, err: "사용자 취소" });
+        return;
+      }
+
+      // temp 폴더에 go.mod / main.go 생성
+      const work = mkdtempSync(path.join(tmpdir(), "mockbuild-"));
+      const goMod = `module local/generated\n\ngo 1.22\n`;
+      const goMain = generateGoMain(projectName, endpoints);
+      writeFileSync(path.join(work, "go.mod"), goMod);
+      writeFileSync(path.join(work, "main.go"), goMain);
+
+      // 내장 go 환경 구성 (현재 OS에서 실행 가능한 go 바이너리를 사용해 타겟 OS/ARCH로 빌드)
+      const env = getBundledGoEnv(targetOS, targetArch);
+
+      // go build
+      await runGo(["version"], { env }); // sanity check
+      await runGo(["build", "-o", filePath, "."], { cwd: work, env });
+
+      event.sender.send("build-mock:done", { ok: true, path: filePath });
+    } catch (err) {
+      event.sender.send("build-mock:done", { ok: false, err: String(err?.message || err) });
+    }
+  });
+
+  /* --------- 추가된 설명창 핸들러 --------- */
+  ipcMain.on('open-description-window', () => {
+    if (!descriptionWindow) {
+      createDescriptionWindow();
+    }
+  });
+
+  ipcMain.on('close-description-window', () => {
+    if (descriptionWindow) {
+      descriptionWindow.close();
+    }
+  });
+});
+
 app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
 
 /* --------- 1) 내장 Go 툴체인 경로/환경 설정 --------- */
@@ -164,53 +259,6 @@ func main() {
 }
 `.trim();
 }
-
-/* --------- 3) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출) --------- */
-// linux 비지원: 안전하게 차단
-ipcMain.on("build-mock", async (event, payload) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  try {
-    if (process.platform !== "win32" && process.platform !== "darwin") {
-      event.sender.send("build-mock:done", { ok: false, err: "현재 OS는 지원하지 않습니다." });
-      return;
-    }
-
-    const projectName = payload?.projectName || "mock-server";
-    const endpoints = payload?.endpoints || [];
-
-    // 저장 위치 먼저 물어봄
-    const targetOS = process.platform === "win32" ? "windows" : "darwin";
-    const targetArch = process.arch === "arm64" ? "arm64" : "amd64";
-    const defaultName = projectName + (targetOS === "windows" ? ".exe" : "");
-    const { canceled, filePath } = await dialog.showSaveDialog(win, {
-      title: "생성된 실행 파일 저장",
-      defaultPath: defaultName,
-    });
-
-    if (canceled || !filePath) {
-      event.sender.send("build-mock:done", { ok: false, err: "사용자 취소" });
-      return;
-    }
-
-    // temp 폴더에 go.mod / main.go 생성
-    const work = mkdtempSync(path.join(tmpdir(), "mockbuild-"));
-    const goMod = `module local/generated\n\ngo 1.22\n`;
-    const goMain = generateGoMain(projectName, endpoints);
-    writeFileSync(path.join(work, "go.mod"), goMod);
-    writeFileSync(path.join(work, "main.go"), goMain);
-
-    // 내장 go 환경 구성 (현재 OS에서 실행 가능한 go 바이너리를 사용해 타겟 OS/ARCH로 빌드)
-    const env = getBundledGoEnv(targetOS, targetArch);
-
-    // go build
-    await runGo(["version"], { env }); // sanity check
-    await runGo(["build", "-o", filePath, "."], { cwd: work, env });
-
-    event.sender.send("build-mock:done", { ok: true, path: filePath });
-  } catch (err) {
-    event.sender.send("build-mock:done", { ok: false, err: String(err?.message || err) });
-  }
-});
 
 // 'go' 절대경로로 실행 + ENOENT 등 error 이벤트 캐치
 function runGo(args, opts) {

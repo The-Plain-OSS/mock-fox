@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>빌드 정보</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f6f9ff',
+              100: '#eef3ff',
+              200: '#dbe6ff',
+              300: '#b9ceff',
+              400: '#8cabff',
+              500: '#5c85ff',
+              600: '#3a64f5',
+              700: '#2a4cd1',
+              800: '#223ea8',
+              900: '#1f377f'
+            }
+          },
+          boxShadow: {
+            soft: '0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :focus-visible { 
+      outline: 2px solid #5c85ff; 
+      outline-offset: 2px; 
+      border-radius: 6px; 
+    }
+    body {
+      -webkit-app-region: no-drag;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="bg-[#1c1c1e] text-neutral-100 overflow-hidden">
+
+  <!-- 전체 화면 컨테이너 -->
+  <div class="flex items-center justify-center min-h-screen p-4">
+    
+    <!-- 컨텐츠가 담길 구역 -->
+    <div class="w-full max-w-2xl rounded-lg shadow-soft p-8 md:p-12">
+      
+      <!-- 아이콘 -->
+      <div class="mb-8">
+        <img src="../mock-fox/assets/fox-logo.png" alt="Mock Fox Icon" class="w-16 h-16 rounded-full object-cover">
+      </div>
+
+      <!-- 제품 설명 박스 -->
+      <div class="border border-neutral-700 rounded-md p-6">
+        <!-- 메인 메시지 -->
+        <h2 class="text-3xl font-bold text-neutral-50 mb-8">
+          Mock Fox 빌드가 완료되었습니다.
+        </h2>
+
+        <!-- 정보 및 등록 버튼 영역 -->
+        <div class="space-y-3 mb-4">
+          <button class="w-full text-left p-4 bg-neutral-700/50 border border-transparent rounded-md hover:bg-neutral-700 focus-visible:border-brand-500 transition-colors">
+            빌드 정보 확인
+          </button>
+          <button class="w-full text-left p-4 bg-neutral-700/50 border border-transparent rounded-md hover:bg-neutral-700 focus-visible:border-brand-500 transition-colors">
+            폴더 열기
+          </button>
+        </div>
+
+
+      <!-- 하단 '마침' 버튼 -->
+      <div class="mt-12 text-right">
+        <button id="finish-button" class="px-8 py-2.5 bg-brand-600 text-white font-semibold rounded-md hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 transition-colors">
+          확인
+        </button>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- 주석: 새 창의 동작을 제어할 스크립트입니다. -->
+  <script src="./description.js"></script>
+</body>
+</html>

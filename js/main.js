@@ -60,6 +60,10 @@ async function boot() {
         alert("엔드포인트가 없습니다. 먼저 하나 이상 추가하세요.");
         return;
       }
+
+      // 설명창
+
+      
       console.log("[renderer] build-mock request:", { projectId: project.id, endpoints: project.endpoints });
       ipc.send("build-mock", { projectId: project.id, endpoints: project.endpoints, projectName: project.name || "mock-server" });
       $("buildBtn").disabled = true;
@@ -78,6 +82,7 @@ async function boot() {
         alert("빌드 실패: " + (res?.err || "알 수 없는 오류"));
         return;
       }
+      ipc.send('open-description-window');
       alert(`빌드 성공!\n저장 위치: ${res.path}`);
     });
 
