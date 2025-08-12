@@ -2,7 +2,7 @@
 <html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
-  <title>Mock Box — R1.0.0</title>
+  <title>Mock Fox — R1.0.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -49,9 +49,11 @@
   <header class="sticky top-0 z-30 backdrop-blur bg-white/80 dark:bg-neutral-900/70 border-b border-neutral-200 dark:border-neutral-800">
     <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center text-white text-xs font-bold shadow-soft">MB</div>
+        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center shadow-soft overflow-hidden">
+          <img src="./assets/fox-logo.png" alt="Mock Fox Logo" class="h-full w-full object-contain" />
+        </div>        
         <div>
-          <h1 class="text-sm font-semibold tracking-tight">Mock Box <span class="text-xs text-neutral-500">R1.0.0</span></h1>
+          <h1 class="text-sm font-semibold tracking-tight">Mock Fox <span class="text-xs text-neutral-500">R1.0.0</span></h1>
           <p class="sr-only">API Mocking UI</p>
         </div>
       </div>
@@ -257,7 +259,7 @@
     const $ = (s, root=document) => root.querySelector(s);
     const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 
-    const LS_KEY = 'mockbox.project.v1';
+    const LS_KEY = 'mockfox.project.v1';
     const project = loadProject();
 
     function loadProject(){
@@ -611,7 +613,7 @@
      * Theme toggle
      * ------------------------------*/
     const themeToggle = $('#themeToggle');
-    const THEME_KEY = 'mockbox.theme';
+    const THEME_KEY = 'mockfox.theme';
     const savedTheme = localStorage.getItem(THEME_KEY);
     if(savedTheme==='dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
     themeToggle.addEventListener('click', ()=>{
