@@ -6,7 +6,6 @@
 
 // Save / Build 버튼 클릭 시 처리
 
-// (추후) Electron IPC를 통해 Go 백엔드와 연동하는 역할도 담당
 
 // 1. html 입력값 .value로 불러오고 data에 키:값쌍으로 딕셔너리 저장.
 document.getElementById("saveBtn").addEventListener("click", () => {

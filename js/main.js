@@ -35,7 +35,6 @@ async function boot() {
       "responseStatus","responseBody",
       "saveBtn","deleteEndpointBtn",
       "copyCurlBtn","curlPreview",
-      "fillQuerySample","fillHeadersSample","fillBodySample","fillResponseSample"
     ];
     const missing = required.filter(id => !$(id));
     if (missing.length) return fatal("필수 요소 누락: " + missing.join(", "));
