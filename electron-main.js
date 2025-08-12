@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync, existsSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,35 +24,46 @@ function createWindow() {
 app.whenReady().then(createWindow);
 app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
 
-// --------- 1) 내장 Go 툴체인 경로/환경 설정 ---------
+/* --------- 1) 내장 Go 툴체인 경로/환경 설정 --------- */
+// resources/<platform-arch>
+// win32: windows-amd64 (고정; ARM 윈도우 미지원이면 이대로)
+// darwin: darwin-amd64 / darwin-arm64
 function pickGoFolder() {
-  // resources/go/<platform-arch>
-  // win32: windows-amd64 / windows-arm64
-  // darwin: darwin-amd64 / darwin-arm64
   const plat = process.platform;
   const arch = process.arch; // 'x64' | 'arm64' ...
-  let key = null;
-  if (plat === "win32") key = arch === "arm64" ? "windows-arm64" : "windows-amd64";
-  else if (plat === "darwin") key = arch === "arm64" ? "darwin-arm64" : "darwin-amd64";
-  else throw new Error(`unsupported platform: ${plat}/${arch}`);
-  return key;
+  if (plat === "win32") return "windows-amd64";
+  if (plat === "darwin") return arch === "arm64" ? "darwin-arm64" : "darwin-amd64";
+  throw new Error(`unsupported platform: ${plat}/${arch}`);
+}
+
+// go 실행파일 절대경로 찾기 (+ 실행권한 보정)
+function resolveGoBinaryAbsolute() {
+  const root = app.isPackaged ? process.resourcesPath : process.cwd();
+  const goRoot = path.join(root, "resources", pickGoFolder());
+  const goBin = path.join(goRoot, "bin", process.platform === "win32" ? "go.exe" : "go");
+
+  if (!existsSync(goBin)) {
+    throw new Error(`go binary not found: ${goBin}\n(개발 모드라면 <project>/resources/... 경로를 확인하세요)`);
+  }
+  if (process.platform !== "win32") {
+    try { chmodSync(goBin, 0o755); } catch {}
+  }
+  return { goBin, goRoot };
 }
 
 function getBundledGoEnv(targetOS, targetArch) {
-  const root = app.isPackaged ? process.resourcesPath : process.cwd();
-  const folder = pickGoFolder(); // 현재 OS에서 돌아갈 go 실행 파일 경로
-  const goRoot = path.join(root, "resources", "go", folder);
+  const { goRoot } = resolveGoBinaryAbsolute();
   const env = { ...process.env };
   env.GOROOT = goRoot;
   env.GOPATH = path.join(app.getPath("userData"), "gopath");
   env.PATH = `${path.join(goRoot, "bin")}${path.delimiter}${env.PATH}`;
   env.CGO_ENABLED = "0";
-  env.GOOS = targetOS;     // 빌드 대상으로 지정 (windows|darwin|linux)
-  env.GOARCH = targetArch; // amd64|arm64
+  env.GOOS = targetOS;     // windows | darwin
+  env.GOARCH = targetArch; // amd64 | arm64
   return env;
 }
 
-// --------- 2) 입력 스펙 → Go main 코드 생성 ---------
+/* --------- 2) 입력 스펙 → Go main 코드 생성 --------- */
 function generateGoMain(projectName, endpointsRaw) {
   // method+path 중복은 마지막으로 정의된 것만 반영
   const map = new Map();
@@ -79,7 +90,6 @@ package main
 
 import (
   "encoding/json"
-  "fmt"
   "log"
   "net/http"
 )
@@ -155,23 +165,28 @@ func main() {
 `.trim();
 }
 
-// --------- 3) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출)
-// linux는 지원하지 않음. ---------
+/* --------- 3) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출) --------- */
+// linux 비지원: 안전하게 차단
 ipcMain.on("build-mock", async (event, payload) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   try {
+    if (process.platform !== "win32" && process.platform !== "darwin") {
+      event.sender.send("build-mock:done", { ok: false, err: "현재 OS는 지원하지 않습니다." });
+      return;
+    }
+
     const projectName = payload?.projectName || "mock-server";
     const endpoints = payload?.endpoints || [];
 
     // 저장 위치 먼저 물어봄
-    const targetOS = process.platform === "win32" ? "windows" : process.platform === "darwin" ? "darwin" : "linux";
+    const targetOS = process.platform === "win32" ? "windows" : "darwin";
     const targetArch = process.arch === "arm64" ? "arm64" : "amd64";
     const defaultName = projectName + (targetOS === "windows" ? ".exe" : "");
     const { canceled, filePath } = await dialog.showSaveDialog(win, {
       title: "생성된 실행 파일 저장",
       defaultPath: defaultName,
     });
-    
+
     if (canceled || !filePath) {
       event.sender.send("build-mock:done", { ok: false, err: "사용자 취소" });
       return;
@@ -188,8 +203,8 @@ ipcMain.on("build-mock", async (event, payload) => {
     const env = getBundledGoEnv(targetOS, targetArch);
 
     // go build
-    const args = ["build", "-o", filePath, "."];
-    const out = await run("go", args, { cwd: work, env });
+    await runGo(["version"], { env }); // sanity check
+    await runGo(["build", "-o", filePath, "."], { cwd: work, env });
 
     event.sender.send("build-mock:done", { ok: true, path: filePath });
   } catch (err) {
@@ -197,14 +212,17 @@ ipcMain.on("build-mock", async (event, payload) => {
   }
 });
 
-function run(cmd, args, opts) {
+// 'go' 절대경로로 실행 + ENOENT 등 error 이벤트 캐치
+function runGo(args, opts) {
+  const { goBin } = resolveGoBinaryAbsolute();
   return new Promise((resolve, reject) => {
-    const p = spawn(cmd, args, opts);
+    const p = spawn(goBin, args, opts);
     let stderr = "";
+    p.on("error", (err) => reject(err));
     p.stderr.on("data", d => (stderr += d.toString()));
     p.on("close", (code) => {
       if (code === 0) resolve(true);
-      else reject(new Error(stderr || `${cmd} exit ${code}`));
+      else reject(new Error(stderr || `${goBin} exit ${code}`));
     });
   });
 }
