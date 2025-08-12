@@ -24,20 +24,19 @@ function createWindow() {
 let descriptionWindow;
 
 function createDescriptionWindow() {
-  // 주석: 현재 열려있는 모든 창 목록에서 첫 번째 창을 메인 윈도우로 간주합니다.
   const mainWindow = BrowserWindow.getAllWindows()[0];
 
   descriptionWindow = new BrowserWindow({
     width: 700,
     height: 650,
     modal: true,
-    parent: mainWindow, // 이렇게 찾아온 메인 윈도우를 부모로 설정합니다.
+    parent: mainWindow, 
     frame: false,
     transparent: true,
     autoHideMenuBar: true,
     resizable: false,
     webPreferences: {
-      // 메인 창과 동일한 보안 설정을 사용합니다.
+      
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, "preload.cjs"),
@@ -103,7 +102,7 @@ app.whenReady().then(() => {
     }
   });
 
-  /* --------- 추가된 설명창 핸들러 --------- */
+  
   ipcMain.on('open-description-window', () => {
     if (!descriptionWindow) {
       createDescriptionWindow();
