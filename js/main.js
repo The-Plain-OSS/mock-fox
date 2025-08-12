@@ -304,4 +304,181 @@ async function boot() {
     div.innerHTML = `<b style="color:#be123c">렌더러 초기화 오류</b><pre style="white-space:pre-wrap;margin-top:8px">${String(err.stack||err)}</pre>`;
     document.body.appendChild(div);
   }
+
+  function generateGoMain(projectName, endpointsRaw) {
+  // 1) 경로별로 EP들을 묶는다(메서드 스위치 위해)
+  const byPath = new Map();
+  for (const raw of (endpointsRaw || [])) {
+    const ep = {
+      id: raw.id,
+      method: (raw.method || "GET").toUpperCase(),
+      path: raw.path || "/",
+      description: raw.description || "",
+      headers: raw.headers || {},
+      responses: Array.isArray(raw.responses) ? raw.responses : null,
+      responseStatus: typeof raw.responseStatus === "number" ? raw.responseStatus : 200,
+      responseBody: raw.responseBody ?? null
+    };
+    const arr = byPath.get(ep.path) || [];
+    // 같은 메서드는 마지막 정의가 우선
+    const filtered = arr.filter(e => e.method !== ep.method);
+    byPath.set(ep.path, [...filtered, ep]);
+  }
+
+  const spec = [...byPath.entries()].map(([path, items]) => ({ path, items }));
+  const specJson = JSON.stringify(spec);
+
+  return `
+package main
+
+import (
+  "encoding/json"
+  "flag"
+  "log"
+  "net/http"
+  "os"
+  "strconv"
+  "time"
+)
+
+type Resp struct {
+  Status      int         \`json:"status"\`
+  ContentType string      \`json:"contentType"\`
+  Desc        string      \`json:"desc"\`
+  Body        interface{} \`json:"body"\`
+}
+
+type EP struct {
+  ID             string                 \`json:"id"\`
+  Method         string                 \`json:"method"\`
+  Path           string                 \`json:"path"\`
+  Description    string                 \`json:"description"\`
+  Headers        map[string]interface{} \`json:"headers"\`
+  Responses      []Resp                 \`json:"responses"\`
+  ResponseStatus int                    \`json:"responseStatus"\`
+  ResponseBody   interface{}            \`json:"responseBody"\`
+}
+
+type Group struct {
+  Path  string \`json:"path"\`
+  Items []EP   \`json:"items"\`
+}
+
+func main() {
+  // ---- 스펙 언마샬 ----
+  var groups []Group
+  _ = json.Unmarshal([]byte(${JSON.stringify(specJson)}), &groups)
+
+  // ---- 포트/CORS 플래그 ----
+  defPort := 8080
+  if v := os.Getenv("PORT"); v != "" {
+    if p, err := strconv.Atoi(v); err == nil && p > 0 { defPort = p }
+  }
+  port := flag.Int("port", defPort, "listening port")
+  cors := flag.Bool("cors", true, "enable permissive CORS")
+  flag.Parse()
+
+  mux := http.NewServeMux()
+
+  for _, g := range groups {
+    // 경로마다 한 번만 핸들러 등록
+    table := make(map[string]EP) // method -> EP
+    for _, ep := range g.Items {
+      table[ep.Method] = ep
+    }
+
+    mux.HandleFunc(g.Path, func(w http.ResponseWriter, r *http.Request) {
+      // CORS (옵션)
+      if *cors {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Headers", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+        if r.Method == "OPTIONS" { w.WriteHeader(200); return }
+      }
+
+      ep, ok := table[r.Method]
+      if !ok {
+        w.WriteHeader(http.StatusMethodNotAllowed)
+        return
+      }
+
+      // 지연 (헤더에 X-Delay(ms) 있으면)
+      if ep.Headers != nil {
+        if v, ok := ep.Headers["X-Delay"]; ok {
+          switch t := v.(type) {
+          case float64:
+            time.Sleep(time.Duration(int(t)) * time.Millisecond)
+          case string:
+            if n, err := strconv.Atoi(t); err == nil {
+              time.Sleep(time.Duration(n) * time.Millisecond)
+            }
+          }
+        }
+      }
+
+      // Content-Type 결정 우선순위: responses[].contentType > 헤더.Content-Type > 기본
+      ct := "application/json"
+      if len(ep.Responses) > 0 && ep.Responses[0].ContentType != "" {
+        ct = ep.Responses[0].ContentType
+      } else if ep.Headers != nil {
+        if v, ok := ep.Headers["Content-Type"]; ok {
+          switch s := v.(type) {
+          case string:
+            if s != "" { ct = s }
+          }
+        }
+      }
+      w.Header().Set("Content-Type", ct)
+
+      // 일반 헤더 주입 (Content-Type, X-Delay 제외)
+      if ep.Headers != nil {
+        for k, v := range ep.Headers {
+          if k == "Content-Type" || k == "X-Delay" { continue }
+          w.Header().Set(k, toString(v))
+        }
+      }
+
+      // 응답 쓰기
+      if len(ep.Responses) > 0 {
+        w.WriteHeader(ep.Responses[0].Status)
+        if ep.Responses[0].Body != nil {
+          _ = json.NewEncoder(w).Encode(ep.Responses[0].Body)
+        }
+        return
+      }
+
+      status := ep.ResponseStatus
+      if status == 0 { status = 200 }
+      w.WriteHeader(status)
+      if ep.ResponseBody != nil {
+        _ = json.NewEncoder(w).Encode(ep.ResponseBody)
+      }
+    })
+  }
+
+  addr := ":" + strconv.Itoa(*port)
+  log.Printf("${projectName || "mock-server"} listening on %s\\n", addr)
+  log.Fatal(http.ListenAndServe(addr, mux))
+}
+
+func toString(v interface{}) string {
+  switch t := v.(type) {
+  case string:
+    return t
+  case float64:
+    // JSON 숫자는 float64로 들어오므로 정수로 보이면 정수로 출력
+    if t == float64(int64(t)) {
+      return strconv.FormatInt(int64(t), 10)
+    }
+    return strconv.FormatFloat(t, 'f', -1, 64)
+  case bool:
+    if t { return "true" }
+    return "false"
+  default:
+    b, _ := json.Marshal(t)
+    return string(b)
+  }
+}
+`.trim();
+}
 }
