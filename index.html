@@ -1,163 +1,653 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
-  <title>Mock Box</title>
+  <title>Mock Box — R1.0.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            mono: [
+              'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'monospace'
+            ]
+          },
           colors: {
             brand: {
-              50: "#f6f9ff",
-              100: "#eef3ff",
-              200: "#dbe6ff",
-              300: "#b9ceff",
-              400: "#8cabff",
-              500: "#5c85ff",
-              600: "#3a64f5",
-              700: "#2a4cd1",
-              800: "#223ea8",
-              900: "#1f377f"
+              50: '#f6f9ff',
+              100: '#eef3ff',
+              200: '#dbe6ff',
+              300: '#b9ceff',
+              400: '#8cabff',
+              500: '#5c85ff',
+              600: '#3a64f5',
+              700: '#2a4cd1',
+              800: '#223ea8',
+              900: '#1f377f'
             }
+          },
+          boxShadow: {
+            soft: '0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)'
           }
         }
       }
     }
   </script>
+  <style>
+    /* Smooth focus ring for keyboard users */
+    :focus-visible { outline: 2px solid #b9ceff; outline-offset: 2px; border-radius: 10px; }
+    /* Compact monospace for editors */
+    textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+  </style>
 </head>
-<body class="bg-neutral-50 text-neutral-900">
-  <div class="min-h-screen grid grid-cols-1 md:grid-cols-[320px_1fr]">
+<body class="bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 dark:bg-neutral-900/70 border-b border-neutral-200 dark:border-neutral-800">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center text-white text-xs font-bold shadow-soft">MB</div>
+        <div>
+          <h1 class="text-sm font-semibold tracking-tight">Mock Box <span class="text-xs text-neutral-500">R1.0.0</span></h1>
+          <p class="sr-only">API Mocking UI</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="keyboardHelpBtn" class="hidden sm:inline-flex rounded-xl px-3 py-2 text-xs border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">단축키 ⌘/Ctrl</button>
+        <button id="themeToggle" class="rounded-xl px-3 py-2 text-xs border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800" aria-label="다크 모드 토글">🌗</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[320px_1fr] min-h-[calc(100vh-56px)]">
     <!-- Sidebar -->
-    <aside class="bg-white border-r border-neutral-200 flex flex-col">
+    <aside class="bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 flex flex-col">
       <div class="p-4">
-        <h1 class="text-lg font-semibold tracking-tight">Mock Box</h1>
-        <p class="text-xs text-neutral-500">Make your mock api/spec easier.</p>
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-base font-semibold tracking-tight">프로젝트</h2>
+            <p class="text-xs text-neutral-500">메타 정보 & 작업</p>
+          </div>
+        </div>
 
         <!-- 프로젝트 메타: 좌측에서 관리 -->
-        <div class="mt-4 space-y-3">
+        <div class="mt-3 space-y-3">
           <div>
             <label class="block text-xs text-neutral-500 mb-1">프로젝트 이름</label>
-            <input id="projectName" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="예) Shopping App API" />
+            <input id="projectName" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="예) Shopping App API" />
           </div>
-          <div>
-            <label class="block text-xs text-neutral-500 mb-1">버전</label>
-            <input id="projectVersion" class="w-32 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="v1.0.0" />
+          <div class="flex gap-3 items-end">
+            <div>
+              <label class="block text-xs text-neutral-500 mb-1">버전</label>
+              <input id="projectVersion" class="w-28 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="v1.0.0" />
+            </div>
+            <div class="grow">
+              <label class="block text-xs text-neutral-500 mb-1">기본 URL</label>
+              <input id="baseUrl" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="https://api.example.com" />
+            </div>
           </div>
           <div id="projectMeta" class="text-xs text-neutral-500"></div>
         </div>
 
         <!-- 좌측 메인 액션 -->
         <div class="mt-4 grid gap-2">
-          <button id="exportHtmlBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 hover:bg-neutral-50">명세서 HTML로 내보내기</button>
-          <button id="buildBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">Mock 서버 생성하기</button>
-          <button id="newProjectBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 hover:bg-neutral-50">새 프로젝트</button>
+          <button id="exportHtmlBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">명세서 HTML로 내보내기</button>
+          <button id="buildBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">Mock 서버 생성(exe)</button>
+          <button id="newProjectBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">새 프로젝트</button>
         </div>
       </div>
 
       <!-- 검색 -->
       <div class="px-4 pb-3">
         <label class="block text-xs text-neutral-500 mb-1">검색</label>
-        <input id="searchInput" type="search" placeholder="엔드포인트, 설명" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        <div class="relative">
+          <input id="searchInput" type="search" placeholder="엔드포인트, 설명" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm pe-10 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <kbd class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-neutral-400">⌘K</kbd>
+        </div>
       </div>
-           <!-- 엔드포인트 추가 -->
-      <div class="p-4 border-t border-neutral-100">
-        <button id="addEndpointBtn" class="w-full rounded-xl px-3 py-2 text-sm bg-neutral-900 text-white hover:bg-neutral-800">+ 엔드포인트 추가</button>
+
+      <!-- 엔드포인트 추가 -->
+      <div class="p-4 border-y border-neutral-100 dark:border-neutral-800">
+        <button id="addEndpointBtn" class="w-full rounded-xl px-3 py-2 text-sm bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:opacity-90">+ 엔드포인트 추가</button>
       </div>
 
       <!-- 엔드포인트 목록 -->
-      <nav id="endpointList" class="px-2 overflow-y-auto grow divide-y divide-neutral-100"></nav>
+      <nav id="endpointList" class="px-2 overflow-y-auto grow divide-y divide-neutral-100 dark:divide-neutral-800" aria-label="엔드포인트 목록">
+        <!-- Dynamically rendered -->
+      </nav>
 
- 
+      <div class="p-3 text-[11px] text-neutral-500 border-t border-neutral-100 dark:border-neutral-800">Tip: 목록에서 ⌘/Ctrl + ↑/↓ 로 전환</div>
     </aside>
 
     <!-- Main: 엔드포인트 상세 (JSON 전용) -->
-    <main class="p-6 md:p-10">
-      <section class="mb-6 flex items-center justify-between">
+    <main class="p-6 md:p-8 lg:p-10 space-y-6">
+      <section class="flex items-center justify-between">
         <h2 class="text-base font-semibold">엔드포인트 설정</h2>
-        <div class="flex gap-2">
-          <button id="saveBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">저장</button>
-          <button id="deleteEndpointBtn" class="rounded-xl px-3 py-2 text-sm border border-red-200 text-red-600 hover:bg-red-50">삭제</button>
+        <div class="flex gap-2 items-center">
+          <button id="saveBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">저장 (⌘/Ctrl+S)</button>
+          <button id="deleteEndpointBtn" class="rounded-xl px-3 py-2 text-sm border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">삭제</button>
         </div>
       </section>
 
       <!-- 기본 정보 -->
-      <section class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 mb-6">
-        <div class="flex items-center gap-3">
-          <select id="method" class="w-28 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300">
+      <section class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="method" class="w-28 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300">
             <option>GET</option><option>POST</option><option>PUT</option>
             <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
           </select>
-          <input id="endpoint" class="flex-1 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="/users/:id" />
+          <input id="endpoint" class="min-w-[260px] flex-1 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="/users/:id" />
         </div>
-        <div class="mt-3">
+        <div>
           <label class="block text-xs text-neutral-500 mb-1">설명</label>
-          <input id="description" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="이 API가 무엇을 하는지 쉽게 설명" />
+          <input id="description" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="이 API가 무엇을 하는지 쉽게 설명" />
         </div>
+
       </section>
 
       <!-- JSON 입력 영역 -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- 왼쪽: 요청 관련 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 space-y-4">
+        <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-4">
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs text-neutral-500">Query (JSON)</label>
-              <button id="fillQuerySample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+              <div class="flex items-center gap-2">
+                <button data-fill="query" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
+                <button data-format="query" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
+              </div>
             </div>
-            <textarea id="query" rows="6" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"page":1,"q":"car"}'></textarea>
+            <textarea id="query" rows="6" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"page":1,"q":"car"}'></textarea>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs text-neutral-500">Headers (JSON)</label>
-              <button id="fillHeadersSample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+              <div class="flex items-center gap-2">
+                <button data-fill="headers" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
+                <button data-format="headers" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
+              </div>
             </div>
-            <textarea id="headers" rows="4" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"Content-Type":"application/json","Authorization":"Bearer <token>"}'></textarea>
+            <textarea id="headers" rows="4" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"Content-Type":"application/json","Authorization":"Bearer <token>"}'></textarea>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs text-neutral-500">Request Body (JSON)</label>
-              <button id="fillBodySample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+              <div class="flex items-center gap-2">
+                <button data-fill="requestBody" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
+                <button data-format="requestBody" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
+              </div>
             </div>
-            <textarea id="requestBody" rows="8" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"name":"Alice"}'></textarea>
+            <textarea id="requestBody" rows="8" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"name":"Alice"}'></textarea>
           </div>
         </div>
 
         <!-- 오른쪽: 응답 관련 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-5 space-y-4">
+        <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-4">
           <div class="flex items-center gap-2">
             <label class="block text-xs text-neutral-500 w-24">Response Code</label>
-            <select id="responseStatus" class="rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 w-32">
+            <select id="responseStatus" class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 w-36">
               <option>200</option><option>201</option><option>204</option>
               <option>400</option><option>401</option><option>403</option><option>404</option>
-              <option>500</option>
+              <option>409</option><option>422</option><option>500</option>
             </select>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs text-neutral-500">Response (JSON)</label>
-              <button id="fillResponseSample" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">샘플</button>
+              <div class="flex items-center gap-2">
+                <select id="exampleSelect" class="text-xs rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 hidden"></select>
+                <button data-fill="responseBody" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
+                <button data-format="responseBody" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
+              </div>
             </div>
-            <textarea id="responseBody" rows="8" class="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"id":1,"name":"Alice"}'></textarea>
+            <textarea id="responseBody" rows="10" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"id":1,"name":"Alice"}'></textarea>
           </div>
         </div>
       </section>
 
       <!-- cURL 미리보기 -->
-      <section class="mt-6 bg-white rounded-2xl shadow-sm border border-neutral-200 p-5">
+      <section class="mt-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5">
         <div class="flex items-center justify-between">
-          <div class="text-sm text-neutral-600">cURL 미리보기</div>
-          <button id="copyCurlBtn" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50">복사</button>
+          <div class="text-sm text-neutral-600 dark:text-neutral-300">cURL 미리보기</div>
+          <div class="flex items-center gap-2">
+            <button id="copyCurlBtn" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">복사</button>
+            <span id="curlSize" class="text-[10px] text-neutral-500"></span>
+          </div>
         </div>
-        <pre id="curlPreview" class="mt-2 p-3 bg-neutral-50 rounded-xl text-xs overflow-x-auto"></pre>
+        <pre id="curlPreview" class="mt-2 p-3 bg-neutral-50 dark:bg-neutral-950 rounded-xl text-xs overflow-x-auto border border-neutral-100 dark:border-neutral-800"></pre>
+      </section>
+
+      <!-- 도움말 / 빈 상태 -->
+      <section id="emptyState" class="rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-6 text-center hidden">
+        <p class="text-sm text-neutral-600 dark:text-neutral-300">왼쪽에서 <b>+ 엔드포인트 추가</b>를 눌러 시작하세요.</p>
       </section>
     </main>
   </div>
 
-  <!-- 모듈 스크립트 -->
+  <!-- Toast -->
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 hidden"></div>
+
+  <!-- Keyboard Help Modal -->
+  <dialog id="kbdModal" class="backdrop:bg-black/40 rounded-2xl p-0 border-0 w-[520px] max-w-[92vw]">
+    <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold">단축키</h3>
+        <button class="text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700" onclick="this.closest('dialog').close()">닫기</button>
+      </div>
+      <ul class="text-sm space-y-2 text-neutral-700 dark:text-neutral-300">
+        <li><b>⌘/Ctrl + S</b> 저장</li>
+        <li><b>⌘/Ctrl + I</b> JSON 포맷</li>
+        <li><b>⌘/Ctrl + K</b> 검색 포커스</li>
+        <li><b>⌘/Ctrl + ↑ / ↓</b> 엔드포인트 전환</li>
+        <li><b>Tab / Shift+Tab</b> 들여쓰기/내어쓰기</li>
+        <li><b>Enter</b> 자동 들여쓰기</li>
+      </ul>
+    </div>
+  </dialog>
   <script type="module" src="./js/main.js"></script>
+
+  <!-- 모듈 스크립트 (단일 파일) -->
+  <script>
+    /** -----------------------------
+     * State & Persistence
+     * ------------------------------*/
+    const $ = (s, root=document) => root.querySelector(s);
+    const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+
+    const LS_KEY = 'mockbox.project.v1';
+    const project = loadProject();
+
+    function loadProject(){
+      const saved = localStorage.getItem(LS_KEY);
+      if(saved){
+        try { return JSON.parse(saved); } catch {}
+      }
+      return { meta: { name: '', version: '', baseUrl: '', createdAt: Date.now() }, endpoints: [], selectedId: null };
+    }
+    function saveProject(){
+      localStorage.setItem(LS_KEY, JSON.stringify(project));
+      showToast('저장됨');
+      renderProjectMeta();
+      renderList();
+      updateCurl();
+    }
+
+    /** -----------------------------
+     * Sidebar: Project Meta & List
+     * ------------------------------*/
+    const projectName = $('#projectName');
+    const projectVersion = $('#projectVersion');
+    const baseUrl = $('#baseUrl');
+
+    function initMeta(){
+      projectName.value = project.meta.name || '';
+      projectVersion.value = project.meta.version || '';
+      baseUrl.value = project.meta.baseUrl || '';
+
+      [projectName, projectVersion, baseUrl].forEach(el => {
+        el.addEventListener('input', () => {
+          project.meta.name = projectName.value.trim();
+          project.meta.version = projectVersion.value.trim();
+          project.meta.baseUrl = baseUrl.value.trim();
+          saveProject();
+        });
+      });
+      renderProjectMeta();
+    }
+
+    function renderProjectMeta(){
+      const meta = $('#projectMeta');
+      const count = project.endpoints.length;
+      const updated = new Date().toLocaleString();
+      meta.innerHTML = `<span class="me-1">엔드포인트</span><b>${count}</b><span class="mx-2">•</span><span class="text-neutral-400">업데이트: ${updated}</span>`;
+    }
+
+    const endpointList = $('#endpointList');
+    function renderList(){
+      const q = $('#searchInput').value.trim().toLowerCase();
+      endpointList.innerHTML = '';
+      const filtered = project.endpoints.filter(ep => {
+        const t = `${ep.method} ${ep.path} ${ep.description}`.toLowerCase();
+        return t.includes(q);
+      });
+      if(filtered.length === 0){
+        endpointList.innerHTML = `<div class="p-6 text-center text-xs text-neutral-500">결과 없음</div>`;
+      }
+      filtered.forEach(ep => {
+        const isActive = project.selectedId === ep.id;
+        const row = document.createElement('button');
+        row.className = `w-full text-left px-3 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 ${isActive ? 'bg-brand-50/70 dark:bg-brand-700/10' : ''}`;
+        row.innerHTML = `<div class="flex items-center justify-between">
+          <div class="min-w-0">
+            <div class="text-xs font-medium truncate"><span class="me-2 inline-flex px-1.5 py-0.5 rounded border text-[10px] ${badgeClass(ep.method)}">${ep.method}</span>${ep.path || '<span class="text-neutral-400">/path</span>'}</div>
+            <div class="text-[11px] text-neutral-500 truncate">${ep.description || ''}</div>
+          </div>
+          <div class="text-[10px] text-neutral-400">${ep.examples?.length||0} 예시</div>
+        </div>`;
+        row.addEventListener('click', () => selectEndpoint(ep.id));
+        endpointList.appendChild(row);
+      });
+      $('#emptyState').classList.toggle('hidden', project.endpoints.length !== 0);
+    }
+
+    function badgeClass(m){
+      const map = { GET:'border-emerald-200 text-emerald-700 bg-emerald-50', POST:'border-sky-200 text-sky-700 bg-sky-50', PUT:'border-amber-200 text-amber-700 bg-amber-50', PATCH:'border-indigo-200 text-indigo-700 bg-indigo-50', DELETE:'border-rose-200 text-rose-700 bg-rose-50', HEAD:'border-neutral-200 text-neutral-700 bg-neutral-50', OPTIONS:'border-neutral-200 text-neutral-700 bg-neutral-50' };
+      return map[m] || 'border-neutral-200 text-neutral-700 bg-neutral-50';
+    }
+
+    /** -----------------------------
+     * Editor Area
+     * ------------------------------*/
+    function getSelected(){ return project.endpoints.find(e => e.id === project.selectedId) || null; }
+
+    function selectEndpoint(id){
+      project.selectedId = id;
+      saveSilently();
+      renderList();
+      bindEditor();
+    }
+
+    function addEndpoint(){
+      const id = crypto.randomUUID();
+      const ep = { id, enabled:true, method:'GET', path:'/example', description:'', latency:0, strict:false, query:'{}', headers:'{}', requestBody:'{}', responseStatus:'200', responseBody:'{}', examples: [] };
+      project.endpoints.unshift(ep);
+      project.selectedId = id;
+      saveProject();
+      bindEditor();
+    }
+
+    function deleteEndpoint(){
+    }
+
+    function bindEditor(){
+      const ep = getSelected();
+      const controls = ['method','endpoint','description','latency','enabled','strictMode','responseStatus','query','headers','requestBody','responseBody'];
+      controls.forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(!ep){ el.value = el.type === 'checkbox' ? false : ''; return; }
+        switch(id){
+          case 'method': el.value = ep.method; break;
+          case 'endpoint': el.value = ep.path; break;
+          case 'description': el.value = ep.description; break;
+          case 'latency': el.value = ep.latency||0; break;
+          case 'enabled': el.checked = !!ep.enabled; break;
+          case 'strictMode': el.checked = !!ep.strict; break;
+          case 'responseStatus': el.value = ep.responseStatus; break;
+          case 'query': el.value = ep.query; break;
+          case 'headers': el.value = ep.headers; break;
+          case 'requestBody': el.value = ep.requestBody; break;
+          case 'responseBody': el.value = ep.responseBody; break;
+        }
+      });
+      updateCurl();
+      renderExamples();
+      updateJsonHealth();
+    }
+
+    function collectFromEditor(){
+      const ep = getSelected(); if(!ep) return;
+      ep.method = $('#method').value;
+      ep.path = $('#endpoint').value.trim();
+      ep.description = $('#description').value.trim();
+      ep.latency = parseInt($('#latency').value||'0',10) || 0;
+      ep.enabled = $('#enabled').checked;
+      ep.strict = $('#strictMode').checked;
+      ep.responseStatus = $('#responseStatus').value;
+      ep.query = $('#query').value;
+      ep.headers = $('#headers').value;
+      ep.requestBody = $('#requestBody').value;
+      ep.responseBody = $('#responseBody').value;
+    }
+
+    /** -----------------------------
+     * Examples handling for Response variants
+     * ------------------------------*/
+    function renderExamples(){
+      const sel = $('#exampleSelect');
+      const ep = getSelected();
+      if(!ep) { sel.classList.add('hidden'); return; }
+      if(!ep.examples || ep.examples.length === 0){ sel.classList.add('hidden'); return; }
+      sel.classList.remove('hidden');
+      sel.innerHTML = ep.examples.map((ex, i)=>`<option value="${i}">${ex.name}</option>`).join('');
+      sel.onchange = () => {
+        const v = ep.examples[parseInt(sel.value,10)];
+        if(v){ $('#responseBody').value = v.body; $('#responseStatus').value = v.status; updateCurl(); updateJsonHealth(); }
+      };
+    }
+
+
+    /** -----------------------------
+     * cURL Preview
+     * ------------------------------*/
+    function updateCurl(){
+      const ep = getSelected();
+      const out = $('#curlPreview');
+      const size = $('#curlSize');
+      if(!ep){ out.textContent = ''; size.textContent=''; return; }
+      const url = (project.meta.baseUrl || '') + (ep.path || '');
+      let curl = `curl -X ${ep.method} '${url}${toQueryString(ep.query)}'`;
+      const headers = parseJsonSafe(ep.headers) || {};
+      Object.entries(headers).forEach(([k,v])=>{ curl += ` \\\n  -H '${k}: ${String(v)}'`; });
+      const body = needsBody(ep.method) ? ep.requestBody : '';
+      if(body && body.trim() && body.trim()!=='{}') {
+        curl += ` \\\n  --data '${minifyJson(body)}'`;
+      }
+      out.textContent = curl;
+      size.textContent = `${curl.length.toLocaleString()} chars`;
+      $('#copyCurlBtn').disabled = curl.length === 0;
+    }
+
+    function toQueryString(str){
+      const obj = parseJsonSafe(str);
+      if(!obj || Object.keys(obj).length===0) return '';
+      const qs = new URLSearchParams();
+      Object.entries(obj).forEach(([k,v])=>{ if(v!==undefined && v!==null) qs.append(k, String(v)); });
+      return '?' + qs.toString();
+    }
+
+    function needsBody(method){ return ['POST','PUT','PATCH','DELETE'].includes(method); }
+
+    function minifyJson(str){ try { return JSON.stringify(JSON.parse(str)); } catch { return str; } }
+
+    function parseJsonSafe(str){ try { return JSON.parse(str||'{}'); } catch { return null; } }
+
+    /** -----------------------------
+     * JSON Editors: enhancements
+     * ------------------------------*/
+    const jsonEditors = [ 'query','headers','requestBody','responseBody' ];
+    jsonEditors.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener('keydown', function(e) {
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        const value = this.value;
+
+        // Tab / Shift+Tab
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          if (e.shiftKey) {
+            const before = value.slice(0, start);
+            const selLines = value.slice(start, end).split('\n');
+            const after = value.slice(end);
+            const newSel = selLines.map(line => line.replace(/^\s{2}/, '')).join('\n');
+            this.value = before + newSel + after;
+            this.selectionStart = start;
+            this.selectionEnd = start + newSel.length;
+          } else {
+            this.value = value.substring(0, start) + '  ' + value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 2;
+          }
+        }
+
+        // Enter → 자동 들여쓰기
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const indent = (value.slice(0, start).match(/(^|\n)(\s*)[^\n]*$/) || [])[2] || '';
+          this.value = value.substring(0, start) + '\n' + indent + value.substring(end);
+          this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+        }
+
+        // 자동 괄호/따옴표 페어
+        const pairs = { '{': '}', '[': ']', '(': ')', '"': '"', "'": "'" };
+        if (pairs[e.key]) {
+          e.preventDefault();
+          this.value = value.slice(0, start) + e.key + pairs[e.key] + value.slice(end);
+          this.selectionStart = this.selectionEnd = start + 1;
+        }
+
+        // Backspace → 비어있는 페어 제거
+        if (e.key === 'Backspace' && start === end) {
+          const prev = value[start - 1];
+          const next = value[start];
+          if ((prev === '{' && next === '}') ||
+              (prev === '[' && next === ']') ||
+              (prev === '(' && next === ')') ||
+              (prev === '"' && next === '"') ||
+              (prev === "'" && next === "'")) {
+            e.preventDefault();
+            this.value = value.slice(0, start - 1) + value.slice(start + 1);
+            this.selectionStart = this.selectionEnd = start - 1;
+          }
+        }
+
+        // Cmd/Ctrl + I → JSON 포맷
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'i') {
+          e.preventDefault();
+          try {
+            const parsed = JSON.parse(this.value);
+            this.value = JSON.stringify(parsed, null, 2);
+          } catch {
+            alert('유효한 JSON이 아닙니다.');
+          }
+        }
+
+        // Save shortcut
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          collectFromEditor();
+          saveProject();
+        }
+      });
+
+      el.addEventListener('input', () => { collectFromEditor(); updateJsonHealth(); updateCurl(); saveSilently(); });
+    });
+
+    function updateJsonHealth(){
+      const fields = ['query','headers','requestBody','responseBody'];
+      let ok = true; let errs = [];
+      for(const id of fields){
+        const v = document.getElementById(id).value;
+        try { if(v.trim()) JSON.parse(v); } catch (e) { ok = false; errs.push(id); }
+      }
+     }
+
+    function saveSilently(){ localStorage.setItem(LS_KEY, JSON.stringify(project)); renderProjectMeta(); }
+
+    /** -----------------------------
+     * Samples & Format buttons
+     * ------------------------------*/
+    const SAMPLE = {
+      query: { page: 1, q: 'car', limit: 20 },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer <token>' },
+      requestBody: { name: 'Alice', email: 'alice@example.com' },
+      responseBody: { id: 1, name: 'Alice' }
+    };
+
+    $$('.sampleBtn').forEach(btn => btn.addEventListener('click', e => {
+      const id = e.currentTarget.dataset.fill; if(!id) return;
+      const el = document.getElementById(id);
+      el.value = JSON.stringify(SAMPLE[id], null, 2);
+      collectFromEditor(); updateJsonHealth(); updateCurl(); saveSilently();
+    }));
+
+    $$('.formatBtn').forEach(btn => btn.addEventListener('click', e => {
+      const id = e.currentTarget.dataset.format; if(!id) return;
+      const el = document.getElementById(id);
+      try { el.value = JSON.stringify(JSON.parse(el.value), null, 2); } catch { alert('유효한 JSON이 아닙니다.'); }
+      collectFromEditor(); updateJsonHealth(); updateCurl(); saveSilently();
+    }));
+
+    /** -----------------------------
+     * Actions
+     * ------------------------------*/
+    $('#addEndpointBtn').addEventListener('click', addEndpoint);
+    $('#deleteEndpointBtn').addEventListener('click', deleteEndpoint);
+    $('#saveBtn').addEventListener('click', () => { collectFromEditor(); saveProject(); });
+    $('#searchInput').addEventListener('input', renderList);
+    $('#keyboardHelpBtn')?.addEventListener('click', () => $('#kbdModal').showModal());
+
+    // global shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#searchInput').focus(); }
+      if((e.metaKey || e.ctrlKey) && e.key==="#"){ e.preventDefault(); $('#kbdModal').showModal(); }
+      if(e.key==='ArrowDown' && (e.metaKey||e.ctrlKey)) { focusNeighbor(+1); }
+      if(e.key==='ArrowUp' && (e.metaKey||e.ctrlKey)) { focusNeighbor(-1); }
+    });
+
+    function focusNeighbor(dir){
+      const idx = project.endpoints.findIndex(e=>e.id===project.selectedId);
+      if(idx<0) return;
+      const next = project.endpoints[idx+dir];
+      if(next){ selectEndpoint(next.id); }
+    }
+
+    // Copy cURL
+    $('#copyCurlBtn').addEventListener('click', async ()=>{
+      const txt = $('#curlPreview').textContent;
+      await navigator.clipboard.writeText(txt);
+      showToast('cURL 복사됨');
+    });
+
+
+    function escapeHtml(s){ return String(s).replace(`/[&<>"]g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c])`); }
+
+    /** -----------------------------
+     * Theme toggle
+     * ------------------------------*/
+    const themeToggle = $('#themeToggle');
+    const THEME_KEY = 'mockbox.theme';
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if(savedTheme==='dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+    themeToggle.addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem(THEME_KEY, document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    /** -----------------------------
+     * Toast helper
+     * ------------------------------*/
+    function showToast(msg){
+      const t = $('#toast');
+      t.textContent = msg;
+      t.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 px-3 py-2 text-sm rounded-xl bg-neutral-900 text-white shadow-soft';
+      t.style.opacity = '0'; t.style.transition = 'opacity .2s ease';
+      t.classList.remove('hidden');
+      requestAnimationFrame(()=>{ t.style.opacity = '1'; });
+      setTimeout(()=>{ t.style.opacity = '0'; setTimeout(()=>t.classList.add('hidden'), 200); }, 1500);
+    }
+
+
+    // Seed if empty
+    if(project.endpoints.length===0) {
+      project.endpoints.push({ id: crypto.randomUUID(), enabled:true, method:'GET', path:'/users', description:'유저 목록 조회', latency:120, strict:false, query:'{"page":1}', headers:'{"Accept":"application/json"}', requestBody:'{}', responseStatus:'200', responseBody:'[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]', examples:[{name:'빈 결과', status:'200', body:'[]'}] });
+      project.selectedId = project.endpoints[0].id;
+      saveSilently();
+    }
+
+    // Search focus by shortcut from top bar kbd hint
+    $('#searchInput').addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ e.currentTarget.blur(); }});
+
+    // Init
+    initMeta();
+    renderList();
+    bindEditor();
+
+  </script>
 </body>
 </html>
