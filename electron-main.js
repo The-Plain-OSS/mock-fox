@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -12,40 +12,50 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, "assets/fox-logo.png"), 
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, "preload.cjs"),
     },
   });
+  // createDescriptionWindow() // TODO: remove it
   win.loadFile("index.html");
 }
 
 let descriptionWindow;
+let lastBuiltPath = "";
+let lastBuiltPort = "8080";
 
-function createDescriptionWindow() {
+function createDescriptionWindow(ctx = {}) {
   const mainWindow = BrowserWindow.getAllWindows()[0];
 
   descriptionWindow = new BrowserWindow({
-    width: 700,
-    height: 650,
+    width: 800,
+    height: 680,
     modal: true,
-    parent: mainWindow, 
+        icon: path.join(__dirname, "assets/fox-logo.png"), 
+
+    parent: mainWindow,
     frame: false,
     transparent: true,
     autoHideMenuBar: true,
     resizable: false,
     webPreferences: {
-      
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, "preload.cjs"),
     },
   });
 
-  descriptionWindow.loadFile(path.join(__dirname, 'description.html'));
+  const q = {
+    path: ctx.path || lastBuiltPath || "",
+    port: String(ctx.port || lastBuiltPort || ""),
+  };
 
-  descriptionWindow.on('closed', () => {
+  descriptionWindow.loadFile(path.join(__dirname, "description.html"), { query: q });
+
+  descriptionWindow.on("closed", () => {
     descriptionWindow = null;
   });
 }
@@ -96,17 +106,47 @@ app.whenReady().then(() => {
       await runGo(["version"], { env }); // sanity check
       await runGo(["build", "-o", filePath, "."], { cwd: work, env });
 
-      event.sender.send("build-mock:done", { ok: true, path: filePath });
+      lastBuiltPath = filePath;
+      lastBuiltPort = "8080"; // generateGoMain()의 기본 포트와 일치
+      event.sender.send("build-mock:done", { ok: true, path: filePath, port: Number(lastBuiltPort) });
     } catch (err) {
       event.sender.send("build-mock:done", { ok: false, err: String(err?.message || err) });
     }
   });
 
   
-  ipcMain.on('open-description-window', () => {
+  ipcMain.on('open-description-window', (_e, ctx) => {
     if (!descriptionWindow) {
-      createDescriptionWindow();
+      createDescriptionWindow(ctx || {});
+    } else {
+      // 이미 열려 있으면 포그라운드로 올리고 쿼리 업데이트 필요 시 재로딩
+      try {
+        const q = { path: (ctx && ctx.path) || lastBuiltPath || '', port: String((ctx && ctx.port) || lastBuiltPort || '') };
+        descriptionWindow.loadFile(path.join(__dirname, 'description.html'), { query: q });
+      } catch {}
+      descriptionWindow.focus();
     }
+  });
+
+  ipcMain.handle('get-build-context', async () => ({ path: lastBuiltPath, port: lastBuiltPort }));
+
+  ipcMain.handle('open-build-folder', async (_e, { path: p }) => {
+    try {
+      if (!p) return false;
+      const dir = existsSync(p) && (await import('node:fs')).then ? undefined : undefined; // placeholder to avoid async
+      // 동기식 처리
+      const fs = await import('node:fs');
+      const stat = fs.existsSync(p) ? fs.lstatSync(p) : null;
+      const target = stat && stat.isDirectory() ? p : path.dirname(p);
+      if (!target) return false;
+      const result = await shell.openPath(target);
+      return result === '';
+    } catch { return false; }
+  });
+
+  ipcMain.handle('open-browser', async (_e, { url }) => {
+    try { await shell.openExternal(url); return true; }
+    catch { return false; }
   });
 
   ipcMain.on('close-description-window', () => {
@@ -273,3 +313,6 @@ function runGo(args, opts) {
     });
   });
 }
+
+ipcMain.on('set-build-context', (_e, ctx) => { lastBuiltPath = ctx.path; lastBuiltPort = ctx.port; });
+ipcMain.on('open-description-window', (_e, ctx) => { createDescriptionWindow(ctx); });

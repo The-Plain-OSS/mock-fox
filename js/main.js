@@ -76,14 +76,32 @@ async function boot() {
     // 빌드 결과 수신
     ipc.on("build-mock:done", (res) => {
       console.log("[renderer] build-mock:done", res);
-      $("buildBtn").disabled = false;
-      $("buildBtn").textContent = "Mock 서버 빌드";
-      if (!res?.ok) {
-        alert("빌드 실패: " + (res?.err || "알 수 없는 오류"));
+      const btn = $("buildBtn");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Mock 서버 빌드";
+      }
+
+      // 결과 검증
+      if (!res || res.ok === false) {
+        const msg = (res && res.err) ? String(res.err) : "알 수 없는 오류";
+        alert("빌드 실패: " + msg);
         return;
       }
-      ipc.send('open-description-window');
-      // alert(`빌드 성공!\n저장 위치: ${res.path}`);
+
+      // 경로/포트 정규화
+      const path = typeof res.path === "string" && res.path.trim() ? res.path : "";
+      const port = String(res.port || 3000);
+
+      // 메인에 컨텍스트 저장(설명창에서 IPC 폴백으로도 읽을 수 있게)
+      try { ipc.send("set-build-context", { path, port }); } catch (_) {}
+
+      // 설명창 열기: 쿼리 인자와 함께 요청
+      try { ipc.send("open-description-window", { path, port }); }
+      catch (e) {
+        console.error("open-description-window 실패", e);
+        alert("설명창을 열 수 없습니다.");
+      }
     });
 
     $("newProjectBtn").addEventListener("click", () => {
