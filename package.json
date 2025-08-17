@@ -23,10 +23,14 @@
         { "from": "resources/darwin-arm64", "to": "resources/darwin-arm64" }
       ]
     },
-    "win": {
+    
+    "win": { 
       "target": ["nsis"],
       "artifactName": "${productName}-${version}-win-${arch}.${ext}",
       "icon": "build/icon.ico",
+      "forceCodeSigning": false,
+        "signAndEditExecutable": false,
+  "signExts": [],
       "extraResources": [
         { "from": "resources/windows-amd64", "to": "resources/windows-amd64" }
       ]
