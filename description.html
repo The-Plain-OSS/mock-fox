@@ -1,89 +1,163 @@
 <!DOCTYPE html>
 <html lang="ko" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>빌드 정보</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>빌드 완료</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f6f9ff',
-              100: '#eef3ff',
-              200: '#dbe6ff',
-              300: '#b9ceff',
-              400: '#8cabff',
-              500: '#5c85ff',
-              600: '#3a64f5',
-              700: '#2a4cd1',
-              800: '#223ea8',
-              900: '#1f377f'
-            }
-          },
-          boxShadow: {
-            soft: '0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)'
-          }
-        }
-      }
+      theme: { extend: { colors: { brand: {50:'#f6f9ff',100:'#eef3ff',200:'#dbe6ff',300:'#b9ceff',400:'#8cabff',500:'#5c85ff',600:'#3a64f5',700:'#2a4cd1',800:'#223ea8',900:'#1f377f'} }, boxShadow: { soft: '0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)'} } }
     }
   </script>
   <style>
-    :focus-visible { 
-      outline: 2px solid #5c85ff; 
-      outline-offset: 2px; 
-      border-radius: 6px; 
-    }
-    body {
-      -webkit-app-region: no-drag;
-      user-select: none;
-    }
+    :focus-visible { outline: 2px solid #5c85ff; outline-offset: 2px; border-radius: 6px; }
+    body { -webkit-app-region: no-drag; user-select: none; }
+    #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 9999; }
   </style>
 </head>
 <body class="bg-[#1c1c1e] text-neutral-100 overflow-hidden">
-
-  <!-- 전체 화면 컨테이너 -->
   <div class="flex items-center justify-center min-h-screen p-4">
-    
-    <!-- 컨텐츠가 담길 구역 -->
-    <div class="w-full max-w-2xl rounded-lg shadow-soft p-8 md:p-12">
-      
-      <!-- 아이콘 -->
-      <div class="mb-8">
-        <img src="../mock-fox/assets/fox-logo.png" alt="Mock Fox Icon" class="w-16 h-16 rounded-full object-cover">
+    <div class="w-full max-w-2xl rounded-lg shadow-soft p-6 md:p-10 border border-neutral-800 bg-neutral-900/40">
+
+      <div class="flex items-center gap-4 mb-6">
+        <div class="h-14 w-14 rounded-full bg-green-500/15 grid place-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-7 w-7 text-green-400"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-2.31a.75.75 0 10-1.22-.9l-4.3 5.84-2.14-2.14a.75.75 0 10-1.06 1.06l2.75 2.75c.31.31.82.27 1.08-.08l4.95-6.53z" clip-rule="evenodd"/></svg>
+        </div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold">Mock Server 빌드가 완료되었습니다.</h2>
+          <p class="text-sm text-neutral-400 mt-1">이제 실행 파일을 열어 로컬 Mock Server를 사용할 수 있습니다.</p>
+        </div>
       </div>
 
-      <!-- 제품 설명 박스 -->
-      <div class="border border-neutral-700 rounded-md p-6">
-        <!-- 메인 메시지 -->
-        <h2 class="text-3xl font-bold text-neutral-50 mb-8">
-          Mock Fox 빌드가 완료되었습니다.
-        </h2>
-
-        <!-- 정보 및 등록 버튼 영역 -->
-        <div class="space-y-3 mb-4">
-          <button class="w-full text-left p-4 bg-neutral-700/50 border border-transparent rounded-md hover:bg-neutral-700 focus-visible:border-brand-500 transition-colors">
-            빌드 정보 확인
-          </button>
-          <button class="w-full text-left p-4 bg-neutral-700/50 border border-transparent rounded-md hover:bg-neutral-700 focus-visible:border-brand-500 transition-colors">
-            폴더 열기
-          </button>
+      <div class="space-y-4">
+        <div class="rounded-md border border-neutral-800 bg-neutral-800/40 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs text-neutral-400">실행 파일</p>
+              <p id="exe-path" class="truncate font-mono text-sm text-neutral-100">C:/builds/mock-fox.exe</p>
+            </div>
+            <div class="shrink-0 flex items-center gap-2">
+              <button id="copy-path" class="px-3 py-2 text-xs rounded-md bg-neutral-700/60 hover:bg-neutral-700 border border-transparent focus-visible:border-brand-500">복사</button>
+              <button id="open-folder" class="px-3 py-2 text-xs rounded-md bg-neutral-700/60 hover:bg-neutral-700 border border-transparent focus-visible:border-brand-500">폴더 열기</button>
+            </div>
+          </div>
         </div>
 
-
-      <!-- 하단 버튼 -->
-      <div class="mt-12 text-right">
-        <button id="finish-button" class="px-8 py-2.5 bg-brand-600 text-white font-semibold rounded-md hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 transition-colors">
-          확인
-        </button>
+        <div class="rounded-md border border-neutral-800 bg-neutral-800/40 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs text-neutral-400">접속 주소</p>
+              <p id="server-url" class="truncate font-mono text-sm text-neutral-100">http://localhost:3000</p>
+            </div>
+            <div class="shrink-0 flex items-center gap-2">
+              <button id="copy-url" class="px-3 py-2 text-xs rounded-md bg-neutral-700/60 hover:bg-neutral-700 border border-transparent focus-visible:border-brand-500">복사</button>
+              <button id="open-browser" class="px-3 py-2 text-xs rounded-md bg-neutral-700/60 hover:bg-neutral-700 border border-transparent focus-visible:border-brand-500">브라우저 열기</button>
+            </div>
+          </div>
+        </div>
       </div>
-      
+
+      <div class="mt-3 rounded-md border border-neutral-800 bg-neutral-800/20 p-4">
+        <h3 class="text-sm font-semibold mb-2">어떻게 사용하나요?</h3>
+        <ul class="list-decimal list-inside space-y-1 text-xs text-neutral-300">
+          <li><b>폴더 열기</b>를 눌러 파일 위치를 확인합니다.</li>
+          <li><b>mock-fox.exe</b>를 더블클릭하면 서버가 켜집니다.</li>
+          <li>서버가 켜지면 <span class="font-mono">접속 주소</span>로 열립니다. <span class="font-mono">localhost</span>는 “내 컴퓨터”라는 뜻입니다.</li>
+          <li>창을 닫거나 프로그램을 종료하면 서버가 꺼집니다.</li>
+        </ul>
+      </div>
+
+      <div class="mt-8 flex justify-end">
+        <button id="finish-button" class="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-md hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 transition-colors">확인</button>
+      </div>
     </div>
   </div>
 
-  <script src="./description.js"></script>
+  <div id="toast" class="hidden"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+
+    async function init() {
+      const $ = (id) => document.getElementById(id);
+
+      // 필수 엘리먼트 존재 확인
+      const must = ['exe-path','server-url','copy-path','copy-url','open-folder','open-browser','finish-button'];
+      const missing = must.filter(id => !$(id));
+      if (missing.length) {
+        console.error('[description] missing elements:', missing);
+        return; // DOM이 없으면 더 진행하지 않음
+      }
+
+      // 1) 초기값: URL 쿼리 → 없으면 IPC로 받기
+      const params = new URLSearchParams(location.search);
+      let exePath = params.get('path') || '';
+      let port = params.get('port') || '';
+
+      if ((!exePath || !port) && window.api?.invoke) {
+        try {
+          const ctx = await window.api.invoke('get-build-context');
+          if (ctx?.path && !exePath) exePath = ctx.path;
+          if (ctx?.port && !port) port = String(ctx.port);
+        } catch (_) {}
+      }
+
+      if (!exePath) exePath = 'C:/builds/mock-fox.exe';
+      if (!port) port = '3000';
+      const url = `http://localhost:${port}`;
+
+      $('exe-path').textContent = exePath;
+      $('server-url').textContent = url;
+
+      function showToast(message, ok = true) {
+        const t = document.getElementById('toast');
+        t.innerHTML = `<div class="px-4 py-2 rounded-md border ${ok ? 'border-green-500/40 bg-green-500/15 text-green-200' : 'border-red-500/40 bg-red-500/15 text-red-200'} shadow-soft">${message}</div>`;
+        t.classList.remove('hidden');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => t.classList.add('hidden'), 1600);
+      }
+
+      async function copy(text) {
+        try { await navigator.clipboard.writeText(text); showToast('복사됨'); }
+        catch { showToast('복사 실패', false); }
+      }
+
+      $('copy-path').addEventListener('click', () => copy(exePath));
+      $('copy-url').addEventListener('click', () => copy(url));
+
+      $('open-folder').addEventListener('click', async () => {
+        try {
+          if (window.api?.invoke) {
+            const ok = await window.api.invoke('open-build-folder', { path: exePath });
+            showToast(ok ? '폴더 열림' : '폴더 열기 실패', !!ok);
+          } else if (window.api?.send) {
+            window.api.send('open-build-folder', { path: exePath });
+          } else {
+            showToast('앱 권한 없음: 폴더 열기 불가', false);
+          }
+        } catch { showToast('폴더 열기 실패', false); }
+      });
+
+      $('open-browser').addEventListener('click', async () => {
+        try {
+          if (window.api?.invoke) {
+            const ok = await window.api.invoke('open-browser', { url });
+            showToast(ok ? '브라우저 열림' : '브라우저 열기 실패', !!ok);
+          } else if (window.api?.send) {
+            window.api.send('open-browser', { url });
+          } else {
+            window.open(url, '_blank');
+          }
+        } catch { showToast('브라우저 열기 실패', false); }
+      });
+
+      $('finish-button').addEventListener('click', () => {
+        if (window.api?.send) window.api.send('close-description-window');
+        else window.close();
+      });
+    }
+  </script>
 </body>
 </html>
