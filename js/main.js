@@ -69,7 +69,7 @@ async function boot() {
       $("buildBtn").disabled = true;
       $("buildBtn").textContent = "빌드 중...";
       setTimeout(() => { // UX용 보호 타이머
-        if ($("buildBtn").disabled) $("buildBtn").textContent = "빌드 중...(잠시만)";
+        if ($("buildBtn").disabled) $("buildBtn").textContent = "빌드 중...";
       }, 1500);
     });
 
@@ -83,7 +83,7 @@ async function boot() {
         return;
       }
       ipc.send('open-description-window');
-      alert(`빌드 성공!\n저장 위치: ${res.path}`);
+      // alert(`빌드 성공!\n저장 위치: ${res.path}`);
     });
 
     $("newProjectBtn").addEventListener("click", () => {
