@@ -34,8 +34,7 @@ RESTful API 명세를 작성하고, 클릭 한 번으로 **실행 가능한 로�
 
 ### 1. 사전 빌드된 바이너리 다운로드
 
-[Releases](https://github.com/The-Plain-OSS/mock-fox/releases) 페이지에서  
-운영체제에 맞는 실행 파일을 내려받아 바로 실행하세요.
+준비중
 
 ### 2. 소스코드에서 빌드
 
