@@ -44,109 +44,168 @@
     textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
   </style>
 </head>
-<body class="bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+<body class="bg-neutral-950 text-neutral-100">
   <!-- Top bar -->
-  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 dark:bg-neutral-900/70 border-b border-neutral-200 dark:border-neutral-800">
-    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+  <header class="sticky top-0 z-30 backdrop-blur bg-neutral-900/90 border-b border-neutral-800">
+    <div class="w-full px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center shadow-soft overflow-hidden">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 grid place-items-center shadow-lg overflow-hidden">
           <img src="./assets/fox-logo.png" alt="Mock Fox Logo" class="h-full w-full object-contain" />
-        </div>        
+        </div>
         <div>
-          <h1 class="text-sm font-semibold tracking-tight">Mock Fox <span class="text-xs text-neutral-500">R1.0.0</span></h1>
+          <h1 class="text-sm font-semibold tracking-tight text-neutral-100">Mock Fox <span class="text-xs text-neutral-400">R1.0.0</span></h1>
           <p class="sr-only">API Mocking UI</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button id="keyboardHelpBtn" class="hidden sm:inline-flex rounded-xl px-3 py-2 text-xs border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">단축키 ⌘/Ctrl</button>
-        <button id="themeToggle" class="rounded-xl px-3 py-2 text-xs border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800" aria-label="다크 모드 토글">🌗</button>
+        <button id="keyboardHelpBtn" class="hidden sm:inline-flex rounded-xl px-3 py-2 text-xs border border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          단축키
+        </button>
       </div>
     </div>
   </header>
 
-  <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[320px_1fr] min-h-[calc(100vh-56px)]">
+  <div class="w-full grid grid-cols-1 md:grid-cols-[300px_1fr] min-h-[calc(100vh-56px)]">
     <!-- Sidebar -->
-    <aside class="bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 flex flex-col">
-      <div class="p-4">
+    <aside class="bg-neutral-900 border-r border-neutral-800 flex flex-col">
+      <div class="p-3">
         <div class="flex items-start justify-between">
           <div>
-            <h2 class="text-base font-semibold tracking-tight">프로젝트</h2>
-            <p class="text-xs text-neutral-500">메타 정보 & 작업</p>
+            <h2 class="text-base font-semibold tracking-tight text-neutral-100">프로젝트</h2>
+            <p class="text-xs text-neutral-400">메타 정보 & 작업</p>
           </div>
         </div>
 
         <!-- 프로젝트 메타: 좌측에서 관리 -->
-        <div class="mt-3 space-y-3">
+        <div class="mt-4 space-y-4">
           <div>
-            <label class="block text-xs text-neutral-500 mb-1">프로젝트 이름</label>
-            <input id="projectName" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="예) Shopping App API" />
+            <label class="block text-xs text-neutral-400 mb-2 font-medium">프로젝트 이름</label>
+            <input id="projectName" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="예) Shopping App API" />
           </div>
           <div class="flex gap-3 items-end">
-            <div>
-              <label class="block text-xs text-neutral-500 mb-1">버전</label>
-              <input id="projectVersion" class="w-28 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="v1.0.0" />
+            <div class="flex-1">
+              <label class="block text-xs text-neutral-400 mb-2 font-medium">버전</label>
+              <input id="projectVersion" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="v1.0.0" />
             </div>
-            <!-- <div class="grow">
-              <label class="block text-xs text-neutral-500 mb-1">기본 URL</label>
-              <input id="baseUrl" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="https://api.example.com" />
-            </div> -->
           </div>
-          <div id="projectMeta" class="text-xs text-neutral-500"></div>
+          <div id="projectMeta" class="text-xs text-neutral-400 px-3 py-2 bg-neutral-800/50 rounded-lg"></div>
         </div>
 
         <!-- 좌측 메인 액션 -->
-        <div class="mt-4 grid gap-2">
-          <button id="exportHtmlBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">명세서 HTML로 내보내기</button>
-          <button id="buildBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">Mock Server 생성(exe)</button>
-          <button id="versionBtn" class="rounded-xl px-3 py-2 text-sm border border-purple-200 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/20">🕒 버전 관리</button>
-          <button id="newProjectBtn" class="rounded-xl px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">새 프로젝트</button>
+        <div class="mt-6 grid gap-3">
+          <button id="buildBtn" class="rounded-xl px-4 py-3 text-sm bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white transition-all duration-200 hover:scale-105 flex items-center gap-3 shadow-lg hover:shadow-xl font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            </svg>
+            Mock 서버 생성
+          </button>
+          <button id="versionBtn" class="rounded-xl px-4 py-2.5 text-sm border border-purple-600/30 bg-purple-950/20 text-purple-400 hover:bg-purple-950/40 hover:border-purple-500/50 hover:text-purple-300 transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            버전 관리
+          </button>
+          <button id="exportHtmlBtn" class="rounded-xl px-4 py-2.5 text-sm border border-neutral-700 bg-neutral-800/50 text-neutral-300 hover:bg-neutral-700/50 hover:text-neutral-200 hover:border-neutral-600 transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+            </svg>
+            HTML 내보내기
+          </button>
+          <button id="newProjectBtn" class="rounded-xl px-4 py-2.5 text-sm border border-neutral-700 bg-neutral-800/50 text-neutral-300 hover:bg-neutral-700/50 hover:text-neutral-200 hover:border-neutral-600 transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            새 프로젝트
+          </button>
         </div>
       </div>
 
       <!-- 검색 -->
-      <div class="px-4 pb-3">
-        <label class="block text-xs text-neutral-500 mb-1">검색</label>
+      <div class="px-3 pb-3">
+        <label class="block text-xs text-neutral-400 mb-2 font-medium">검색</label>
         <div class="relative">
-          <input id="searchInput" type="search" placeholder="엔드포인트, 설명" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm pe-10 focus:outline-none focus:ring-2 focus:ring-brand-300" />
-          <kbd class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-neutral-400">⌘K</kbd>
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input id="searchInput" type="search" placeholder="엔드포인트, 설명 검색..." class="w-full rounded-xl border border-neutral-700 bg-neutral-800 pl-10 pr-12 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" />
+          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] text-neutral-500 bg-neutral-700 rounded border border-neutral-600">⌘K</kbd>
         </div>
       </div>
 
       <!-- 엔드포인트 추가 -->
-      <div class="p-4 border-y border-neutral-100 dark:border-neutral-800">
-        <button id="addEndpointBtn" class="w-full rounded-xl px-3 py-2 text-sm bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:opacity-90">+ 엔드포인트 추가</button>
+      <div class="p-3 border-y border-neutral-800">
+        <button id="addEndpointBtn" class="w-full rounded-xl px-4 py-3 text-sm bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white transition-all duration-200 hover:scale-105 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          엔드포인트 추가
+        </button>
       </div>
 
       <!-- 엔드포인트 목록 -->
-      <nav id="endpointList" class="px-2 overflow-y-auto grow divide-y divide-neutral-100 dark:divide-neutral-800" aria-label="엔드포인트 목록">
+      <nav id="endpointList" class="px-3 overflow-y-auto grow" aria-label="엔드포인트 목록">
         <!-- Dynamically rendered -->
       </nav>
 
-      <div class="p-3 text-[11px] text-neutral-500 border-t border-neutral-100 dark:border-neutral-800">Tip: 목록에서 ⌘/Ctrl + ↑/↓ 로 전환</div>
+      <div class="p-3 border-t border-neutral-800 bg-neutral-900/50">
+        <div class="flex items-center gap-2 text-[11px] text-neutral-500">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>⌘↑↓ 키로 엔드포인트 전환</span>
+        </div>
+      </div>
     </aside>
 
     <!-- Main: 엔드포인트 상세 (JSON 전용) -->
-    <main class="p-6 md:p-8 lg:p-10 space-y-6">
+    <main class="p-4 md:p-6 lg:p-8 space-y-6 bg-neutral-950 overflow-x-hidden">
       <section class="flex items-center justify-between">
-        <h2 class="text-base font-semibold">엔드포인트 설정</h2>
-        <div class="flex gap-2 items-center">
-          <button id="saveBtn" class="rounded-xl px-3 py-2 text-sm bg-brand-600 text-white hover:bg-brand-700">저장 (⌘/Ctrl+S)</button>
-          <button id="deleteEndpointBtn" class="rounded-xl px-3 py-2 text-sm border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">삭제</button>
+        <div>
+          <h2 class="text-xl font-bold text-neutral-100">엔드포인트 설정</h2>
+          <p class="text-sm text-neutral-400 mt-1">API 엔드포인트를 설정하고 응답을 정의하세요</p>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button id="saveBtn" class="rounded-xl px-4 py-2 text-sm bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white transition-all duration-200 hover:scale-105 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="hidden sm:inline">저장 (⌘S)</span>
+            <span class="sm:hidden">저장</span>
+          </button>
+          <button id="deleteEndpointBtn" class="rounded-xl px-4 py-2 text-sm border border-red-700/50 bg-red-950/20 text-red-400 hover:bg-red-950/40 hover:border-red-600/50 hover:text-red-300 transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            삭제
+          </button>
         </div>
       </section>
 
       <!-- 기본 정보 -->
-      <section class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-3">
-        <div class="flex flex-wrap items-center gap-3">
-          <select id="method" class="w-28 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300">
-            <option>GET</option><option>POST</option><option>PUT</option>
-            <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
-          </select>
-          <input id="endpoint" class="min-w-[260px] flex-1 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="/users/:id" />
+      <section class="bg-neutral-900 rounded-2xl border border-neutral-800 p-4 md:p-6 space-y-4 md:space-y-5">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+          <h3 class="text-lg font-semibold text-neutral-100">기본 정보</h3>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="w-full sm:w-32">
+            <label class="block text-xs text-neutral-400 mb-2 font-medium">HTTP 메서드</label>
+            <select id="method" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all">
+              <option>GET</option><option>POST</option><option>PUT</option>
+              <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label class="block text-xs text-neutral-400 mb-2 font-medium">엔드포인트 경로</label>
+            <input id="endpoint" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="/users/:id" />
+          </div>
         </div>
         <div>
-          <label class="block text-xs text-neutral-500 mb-1">설명</label>
-          <input id="description" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder="이 API가 무엇을 하는지 쉽게 설명" />
+          <label class="block text-xs text-neutral-400 mb-2 font-medium">설명 (선택사항)</label>
+          <textarea id="description" rows="2" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="이 엔드포인트의 기능을 설명해주세요..."></textarea>
         </div>
 
       </section>
@@ -216,7 +275,12 @@
         <div class="flex items-center justify-between">
           <div class="text-sm text-neutral-600 dark:text-neutral-300">cURL 미리보기</div>
           <div class="flex items-center gap-2">
-            <button id="copyCurlBtn" class="text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">복사</button>
+            <button id="copyCurlBtn" class="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+              복사
+            </button>
             <span id="curlSize" class="text-[10px] text-neutral-500"></span>
           </div>
         </div>
@@ -231,11 +295,11 @@
   </div>
 
   <!-- 버전 관리 모달 -->
-  <div id="versionModal" class="fixed inset-0 backdrop-blur-sm bg-black/30 hidden z-50 flex items-center justify-center p-6">
-    <div class="bg-white dark:bg-neutral-900 rounded-3xl shadow-xl border-0 w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ease-out">
+  <div id="versionModal" class="fixed inset-0 backdrop-blur-sm bg-black/60 hidden z-50 flex items-center justify-center p-6">
+    <div class="bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-700/50 w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ease-out">
 
       <!-- 헤더 -->
-      <div class="px-8 py-6 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20">
+      <div class="px-8 py-6 bg-gradient-to-r from-purple-950/40 to-indigo-950/40 border-b border-purple-800/30">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg">
@@ -244,11 +308,11 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-neutral-100">버전 관리</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">프로젝트 히스토리를 저장하고 복원하세요</p>
+              <h3 class="text-xl font-bold text-neutral-100">버전 관리</h3>
+              <p class="text-sm text-neutral-400 mt-0.5">프로젝트 히스토리를 저장하고 복원하세요</p>
             </div>
           </div>
-          <button id="closeVersionModal" class="w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-700 transition-all">
+          <button id="closeVersionModal" class="w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-neutral-200 transition-all">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -257,7 +321,7 @@
       </div>
 
       <!-- 액션 바 -->
-      <div class="px-8 py-5 border-b border-neutral-100 dark:border-neutral-800">
+      <div class="px-8 py-5 border-b border-neutral-800 bg-neutral-800/30">
         <div class="flex items-center gap-4">
           <button id="saveVersionBtn" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-3">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,8 +329,8 @@
             </svg>
             버전 저장
           </button>
-          <input id="versionMessage" type="text" placeholder="변경사항 요약 (예: 로그인 API 추가)" class="flex-1 px-4 py-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all" />
-          <div id="versionStats" class="px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          <input id="versionMessage" type="text" placeholder="변경사항 요약 (예: 로그인 API 추가)" class="flex-1 px-4 py-3 rounded-2xl border border-neutral-700 bg-neutral-800 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" />
+          <div id="versionStats" class="px-4 py-2 rounded-xl bg-neutral-700 text-xs font-medium text-neutral-300">
             0개 · 0KB
           </div>
         </div>
@@ -295,23 +359,49 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 hidden"></div>
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 hidden z-50"></div>
 
   <!-- Keyboard Help Modal -->
-  <dialog id="kbdModal" class="backdrop:bg-black/40 rounded-2xl p-0 border-0 w-[520px] max-w-[92vw]">
-    <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold">단축키</h3>
-        <button class="text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700" onclick="this.closest('dialog').close()">닫기</button>
+  <dialog id="kbdModal" class="backdrop:bg-black/40 dark:backdrop:bg-black/60 rounded-2xl p-0 border-0 w-[520px] max-w-[92vw]">
+    <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-6 shadow-xl dark:shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">단축키</h3>
+        </div>
+        <button class="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5" onclick="this.closest('dialog').close()">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          닫기
+        </button>
       </div>
-      <ul class="text-sm space-y-2 text-neutral-700 dark:text-neutral-300">
-        <li><b>⌘/Ctrl + S</b> 저장</li>
-        <li><b>⌘/Ctrl + I</b> JSON 포맷</li>
-        <li><b>⌘/Ctrl + K</b> 검색 포커스</li>
-        <li><b>⌘/Ctrl + ↑ / ↓</b> 엔드포인트 전환</li>
-        <li><b>Tab / Shift+Tab</b> 들여쓰기/내어쓰기</li>
-        <li><b>Enter</b> 자동 들여쓰기</li>
-      </ul>
+      <div class="grid gap-3">
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+          <span class="text-sm text-neutral-700 dark:text-neutral-300">저장</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘S</kbd>
+        </div>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+          <span class="text-sm text-neutral-700 dark:text-neutral-300">JSON 포맷</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘I</kbd>
+        </div>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+          <span class="text-sm text-neutral-700 dark:text-neutral-300">검색 포커스</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘K</kbd>
+        </div>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+          <span class="text-sm text-neutral-700 dark:text-neutral-300">엔드포인트 전환</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘↑↓</kbd>
+        </div>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+          <span class="text-sm text-neutral-700 dark:text-neutral-300">들여쓰기</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">Tab</kbd>
+        </div>
+      </div>
     </div>
   </dialog>
   <script type="module" src="./js/main.js"></script>
@@ -675,16 +765,10 @@
     function escapeHtml(s){ return String(s).replace(`/[&<>"]g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c])`); }
 
     /** -----------------------------
-     * Theme toggle
+     * Dark mode only setup
      * ------------------------------*/
-    const themeToggle = $('#themeToggle');
-    const THEME_KEY = 'mockfox.theme';
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    if(savedTheme==='dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
-    themeToggle.addEventListener('click', ()=>{
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem(THEME_KEY, document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    });
+    // Force dark mode always
+    document.documentElement.classList.add('dark');
 
     /** -----------------------------
      * Toast helper
