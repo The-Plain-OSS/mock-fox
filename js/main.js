@@ -18,6 +18,7 @@ async function boot() {
     const state = await import("./state.js");
     const { ipc } = await import("./ipc.js");
     const exp = await import("./export.js");
+    const { versionUI } = await import("./version-ui.js");
 
     // state에서 사용
     const { project, saveProject, getCurrent, setCurrent, updateProjectMeta, trimEmpty } = state;
@@ -246,6 +247,9 @@ async function boot() {
       project.endpoints[i] = { ...project.endpoints[i], ...data };
       saveProject();
 
+      // 자동 백업 트리거
+      versionUI.triggerAutoBackup();
+
       console.log("[renderer] saved:", project.endpoints[i]);
       ipc.send("save-spec", project.endpoints[i]);
       renderSidebar($("searchInput").value);
@@ -261,6 +265,10 @@ async function boot() {
       project.endpoints.splice(idx, 1);
       setCurrent(project.endpoints[0]?.id || null);
       saveProject();
+
+      // 자동 백업 트리거
+      versionUI.triggerAutoBackup();
+
       renderSidebar($("searchInput").value);
       const next = getCurrent();
       if (next) bindForm(next); else clearForm();
@@ -298,6 +306,24 @@ async function boot() {
         $("copyCurlBtn").textContent = "복사됨!";
         setTimeout(() => ($("copyCurlBtn").textContent = "복사"), 800);
       });
+    });
+
+    // UI 새로고침 이벤트 리스너 (버전 복원 시)
+    window.addEventListener("refresh-ui", () => {
+      // 프로젝트 메타 업데이트
+      $("projectName").value = project.name || "";
+      $("projectVersion").value = project.version || "";
+      applyProjectMeta();
+
+      // 사이드바 새로고침
+      renderSidebar();
+
+      // 첫 번째 엔드포인트 선택
+      if (project.endpoints[0]) {
+        selectEndpoint(project.endpoints[0].id);
+      } else {
+        clearForm();
+      }
     });
 
     // 초기 렌더
