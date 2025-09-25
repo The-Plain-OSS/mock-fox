@@ -29,7 +29,7 @@ async function boot() {
 
     // 필수 DOM 요소 확인
     const required = [
-      "projectName","projectVersion","projectMeta","exportHtmlBtn","buildBtn","newProjectBtn",
+      "projectName","projectMeta","exportHtmlBtn","buildBtn","newProjectBtn",
       "searchInput","endpointList","addEndpointBtn",
       "method","endpoint","description",
       "query","headers","requestBody",
@@ -42,11 +42,9 @@ async function boot() {
 
     // ========== 프로젝트(좌측) ==========
     $("projectName").value = project.name || "";
-    $("projectVersion").value = project.version || "";
     applyProjectMeta();
 
     $("projectName").addEventListener("input", (e) => { project.name = e.target.value; saveProject(); applyProjectMeta(); });
-    $("projectVersion").addEventListener("input", (e) => { project.version = e.target.value; saveProject(); applyProjectMeta(); });
 
     $("exportHtmlBtn").addEventListener("click", () => {
       const html = generateSpecHTML(project);
@@ -110,7 +108,7 @@ async function boot() {
       const fresh = {
         id: uuid(),
         name: "Untitled Project",
-        version: "v0.1.0",
+        version: "새 프로젝트",
         updatedAt: new Date().toISOString(),
         endpoints: []
       };
@@ -247,8 +245,6 @@ async function boot() {
       project.endpoints[i] = { ...project.endpoints[i], ...data };
       saveProject();
 
-      // 자동 백업 트리거
-      versionUI.triggerAutoBackup();
 
       console.log("[renderer] saved:", project.endpoints[i]);
       ipc.send("save-spec", project.endpoints[i]);
@@ -266,8 +262,6 @@ async function boot() {
       setCurrent(project.endpoints[0]?.id || null);
       saveProject();
 
-      // 자동 백업 트리거
-      versionUI.triggerAutoBackup();
 
       renderSidebar($("searchInput").value);
       const next = getCurrent();
@@ -312,7 +306,6 @@ async function boot() {
     window.addEventListener("refresh-ui", () => {
       // 프로젝트 메타 업데이트
       $("projectName").value = project.name || "";
-      $("projectVersion").value = project.version || "";
       applyProjectMeta();
 
       // 사이드바 새로고침

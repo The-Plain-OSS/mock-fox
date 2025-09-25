@@ -119,41 +119,6 @@ export class VersionManager {
     }
   }
 
-  // 자동 백업 (변경사항이 있을 때만)
-  autoBackup(projectData) {
-    try {
-      const versions = this.getAllVersions();
-      const lastVersion = versions[0];
-
-      // 마지막 자동 백업과 비교하여 변경사항이 있는지 확인
-      if (lastVersion && lastVersion.type === "auto") {
-        const lastDataStr = JSON.stringify(lastVersion.data.endpoints || []);
-        const currentDataStr = JSON.stringify(projectData.endpoints || []);
-
-        if (lastDataStr === currentDataStr) {
-          console.log("[VersionManager] No changes detected, skipping auto backup");
-          return null;
-        }
-      }
-
-      // 5분 이내 자동 백업이 있으면 스킵
-      if (lastVersion && lastVersion.type === "auto") {
-        const lastTime = new Date(lastVersion.timestamp);
-        const now = new Date();
-        const diffMinutes = (now - lastTime) / (1000 * 60);
-
-        if (diffMinutes < 5) {
-          console.log("[VersionManager] Auto backup cooldown, skipping");
-          return null;
-        }
-      }
-
-      return this.saveVersion(projectData, "자동 백업", "auto");
-    } catch (e) {
-      console.warn("[VersionManager] autoBackup failed:", e);
-      return null;
-    }
-  }
 
   // 버전 통계
   getVersionStats() {
@@ -167,22 +132,14 @@ export class VersionManager {
     };
   }
 
-  // 버전 정리 (오래된 자동 백업 삭제)
+  // 버전 정리 (오래된 버전 삭제)
   cleanup() {
     try {
       const versions = this.getAllVersions();
-      const now = new Date();
 
-      // 7일 이전의 자동 백업만 삭제 (수동 버전은 보관)
-      const filtered = versions.filter(v => {
-        if (v.type === "manual") return true;
-
-        const versionTime = new Date(v.timestamp);
-        const diffDays = (now - versionTime) / (1000 * 60 * 60 * 24);
-        return diffDays <= 7;
-      });
-
-      if (filtered.length !== versions.length) {
+      // 최대 버전 수 제한만 적용
+      if (versions.length > this.MAX_VERSIONS) {
+        const filtered = versions.slice(0, this.MAX_VERSIONS);
         storage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
         console.log("[VersionManager] Cleanup completed:", versions.length - filtered.length, "versions removed");
       }

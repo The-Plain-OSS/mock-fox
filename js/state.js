@@ -44,7 +44,7 @@ export const toKebab = (s) =>
 export let project = loadProject() || {
   id: uuid(),
   name: "My API Project",
-  version: "v0.1.0",
+  version: "프로젝트 버전",
   updatedAt: new Date().toISOString(),
   endpoints: []
 };

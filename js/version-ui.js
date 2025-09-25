@@ -102,6 +102,12 @@ export class VersionUI {
 
       const version = versionManager.saveVersion(project, message, "manual");
 
+      // 현재 프로젝트의 버전명을 저장한 버전의 메시지로 업데이트
+      if (message) {
+        project.version = message;
+        saveProject();
+      }
+
       // UI 업데이트
       this.renderVersionList();
       this.updateStats();
@@ -218,7 +224,7 @@ export class VersionUI {
       ? "bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-200"
       : "bg-gradient-to-r from-neutral-100 to-slate-100 text-neutral-600 border border-neutral-200";
 
-    const badgeText = isCurrent ? "현재 버전" : isManual ? "수동 저장" : "자동 백업";
+    const badgeText = isCurrent ? "현재 버전" : "저장됨";
 
     const iconSvg = isCurrent
       ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +265,7 @@ export class VersionUI {
 
               <!-- 제목 -->
               <h4 class="font-semibold text-base text-neutral-900 dark:text-neutral-100 mb-2 leading-tight">
-                ${version.message || (isCurrent ? "현재 버전" : isManual ? "수동 저장 버전" : "자동 백업")}
+                ${version.message || (isCurrent ? "현재 버전" : "저장된 버전")}
               </h4>
 
               <!-- 메타 정보 -->
@@ -415,23 +421,6 @@ export class VersionUI {
     }, 3000);
   }
 
-  // 자동 백업 트리거
-  triggerAutoBackup() {
-    try {
-      const version = versionManager.autoBackup(project);
-      if (version) {
-        console.log("[VersionUI] Auto backup created:", version.id);
-
-        // 모달이 열려있으면 UI 업데이트
-        if (this.isOpen) {
-          this.renderVersionList();
-          this.updateStats();
-        }
-      }
-    } catch (error) {
-      console.warn("[VersionUI] Auto backup failed:", error);
-    }
-  }
 }
 
 // 전역 인스턴스
