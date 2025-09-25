@@ -19,6 +19,7 @@ async function boot() {
     const { ipc } = await import("./ipc.js");
     const exp = await import("./export.js");
     const { versionUI } = await import("./version-ui.js");
+    const { templateUI } = await import("./template-ui.js");
 
     // state에서 사용
     const { project, saveProject, getCurrent, setCurrent, updateProjectMeta, trimEmpty } = state;
@@ -103,22 +104,7 @@ async function boot() {
       }
     });
 
-    $("newProjectBtn").addEventListener("click", () => {
-      if (!confirm("현재 내용을 초기화하고 새 프로젝트를 시작할까요?")) return;
-      const fresh = {
-        id: uuid(),
-        name: "Untitled Project",
-        version: "새 프로젝트",
-        updatedAt: new Date().toISOString(),
-        endpoints: []
-      };
-      Object.assign(project, fresh);
-      setCurrent(null);
-      saveProject();
-      applyProjectMeta();
-      renderSidebar();
-      clearForm();
-    });
+    // 새프로젝트 버튼은 이제 templateUI에서 처리합니다
 
     // ========== 엔드포인트 목록/검색/추가 ==========
     $("searchInput").addEventListener("input", (e) => renderSidebar(e.target.value));
