@@ -12,13 +12,15 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: path.join(__dirname, "assets/fox-logo.png"), 
+    icon: path.join(__dirname, "assets/fox-logo.png"),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, "preload.cjs"),
     },
   });
+  // 창을 최대화(전체화면)으로 시작
+  win.maximize();
   // createDescriptionWindow() // TODO: remove it
   win.loadFile("index.html");
 }

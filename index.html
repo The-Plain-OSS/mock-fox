@@ -2,7 +2,7 @@
 <html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
-  <title>Mock Fox — R1.0.0</title>
+  <title>Mock Fox — R2.0.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,268 +12,433 @@
       theme: {
         extend: {
           fontFamily: {
-            mono: [
-              'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'monospace'
-            ]
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'monospace'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
           },
           colors: {
             brand: {
-              50: '#f6f9ff',
-              100: '#eef3ff',
-              200: '#dbe6ff',
-              300: '#b9ceff',
-              400: '#8cabff',
-              500: '#5c85ff',
-              600: '#3a64f5',
-              700: '#2a4cd1',
-              800: '#223ea8',
-              900: '#1f377f'
+              50: '#f0f4ff',
+              100: '#e1eaff',
+              200: '#c7d8ff',
+              300: '#a5beff',
+              400: '#8aa2ff',
+              500: '#6d85ff',
+              600: '#5a67f5',
+              700: '#4f52e1',
+              800: '#4043c7',
+              900: '#3a3ca3'
+            },
+            glass: {
+              100: 'rgba(255,255,255,0.1)',
+              200: 'rgba(255,255,255,0.2)',
+              300: 'rgba(255,255,255,0.3)'
             }
           },
           boxShadow: {
-            soft: '0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)'
+            glow: '0 0 20px rgba(109, 133, 255, 0.3)',
+            'inner-glow': 'inset 0 0 20px rgba(109, 133, 255, 0.1)',
+            neumorphic: '8px 8px 16px rgba(0,0,0,0.3), -8px -8px 16px rgba(255,255,255,0.05)',
+            'neumorphic-inset': 'inset 8px 8px 16px rgba(0,0,0,0.3), inset -8px -8px 16px rgba(255,255,255,0.05)'
+          },
+          backdropBlur: {
+            xs: '2px'
+          },
+          animation: {
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-soft': 'pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          },
+          keyframes: {
+            glow: {
+              '0%': { boxShadow: '0 0 20px rgba(109, 133, 255, 0.3)' },
+              '100%': { boxShadow: '0 0 30px rgba(109, 133, 255, 0.5)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-5px)' }
+            },
+            'pulse-soft': {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.7' }
+            },
+            ripple: {
+              '0%': { transform: 'scale(0)', opacity: '1' },
+              '100%': { transform: 'scale(2)', opacity: '0' }
+            }
           }
         }
       }
     }
   </script>
   <style>
-    /* Smooth focus ring for keyboard users */
-    :focus-visible { outline: 2px solid #b9ceff; outline-offset: 2px; border-radius: 10px; }
-    /* Compact monospace for editors */
-    textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Smooth focus ring */
+    :focus-visible {
+      outline: 2px solid #6d85ff;
+      outline-offset: 2px;
+      border-radius: 12px;
+      box-shadow: 0 0 0 4px rgba(109, 133, 255, 0.2);
+    }
+
+    /* Glassmorphism effects */
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Code editor styling */
+    .code-editor {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      line-height: 1.6;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #6d85ff, #5a67f5);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #8aa2ff, #6d85ff);
+    }
+
+    /* Neumorphism button styles */
+    .neomorphic {
+      background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+      box-shadow: 8px 8px 16px rgba(0,0,0,0.3), -8px -8px 16px rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .neomorphic:hover {
+      transform: translateY(-2px);
+      box-shadow: 12px 12px 20px rgba(0,0,0,0.4), -12px -12px 20px rgba(255,255,255,0.07);
+    }
+
+    .neomorphic:active {
+      transform: translateY(0);
+      box-shadow: inset 8px 8px 16px rgba(0,0,0,0.3), inset -8px -8px 16px rgba(255,255,255,0.05);
+    }
+
+    /* Button ripple effect */
+    button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ripple animation keyframes */
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
-<body class="bg-neutral-950 text-neutral-100">
-  <div class="w-full grid grid-cols-1 md:grid-cols-[300px_1fr] min-h-screen">
-    <!-- Sidebar -->
-    <aside class="bg-neutral-900 border-r border-neutral-800 flex flex-col">
-      <div class="p-3">
-        <div class="flex items-start justify-between">
-          <div>
-            <h2 class="text-base font-semibold tracking-tight text-neutral-100">프로젝트</h2>
-            <p class="text-xs text-neutral-400">메타 정보 & 작업</p>
+<body class="bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100 font-sans overflow-hidden">
+  <!-- Background Effects -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl animate-pulse-soft"></div>
+    <div class="absolute bottom-20 right-20 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl animate-pulse-soft" style="animation-delay: 1s;"></div>
+  </div>
+  <!-- Main App Container -->
+  <div class="relative z-10 w-full h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="glass border-b border-glass-200 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <!-- Logo & Project Info -->
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-glow">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+              </svg>
+            </div>
+            <div>
+              <input id="projectName" class="bg-transparent text-xl font-bold text-white placeholder-neutral-400 border-none outline-none focus:ring-0 p-0" placeholder="Mock Fox Project" />
+              <div id="projectMeta" class="text-xs text-neutral-400">엔드포인트 0개 · 업데이트 방금</div>
+            </div>
           </div>
         </div>
 
-        <!-- 프로젝트 메타: 좌측에서 관리 -->
-        <div class="mt-4 space-y-4">
-          <div>
-            <label class="block text-xs text-neutral-400 mb-2 font-medium">프로젝트 이름</label>
-            <input id="projectName" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="예) Shopping App API" />
-          </div>
-
-          <!-- 버전 관리 -->
-          <button id="versionBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 text-neutral-300 hover:text-white text-sm font-medium transition-colors">
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3">
+          <button id="versionBtn" class="neomorphic flex items-center gap-2 px-4 py-2 rounded-xl text-neutral-300 hover:text-white text-sm font-medium transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             버전 관리
           </button>
 
-          <div id="projectMeta" class="text-xs text-neutral-400 px-3 py-2 bg-neutral-800/50 rounded-lg"></div>
-        </div>
-
-        <!-- 좌측 메인 액션 -->
-        <div class="mt-6 grid gap-3">
-          <button id="buildBtn" class="rounded-xl px-4 py-3 text-sm bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white transition-all duration-200 hover:scale-105 flex items-center gap-3 shadow-lg hover:shadow-xl font-medium">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-            </svg>
-            Mock 서버 생성
-          </button>
-          <button id="exportHtmlBtn" class="rounded-xl px-4 py-3 text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white transition-all duration-200 hover:scale-105 flex items-center gap-3 shadow-lg hover:shadow-xl font-medium">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m-2 9h10a2 2 0 002-2V9H5v10a2 2 0 002 2z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3v4l-4-2 4-2zM5 21V9a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2z"></path>
-            </svg>
-            API 명세서 내보내기
-          </button>
-          <button id="newProjectBtn" class="relative rounded-xl px-4 py-2.5 text-sm border border-neutral-700 bg-neutral-800/50 text-neutral-300 hover:bg-neutral-700/50 hover:text-neutral-200 hover:border-neutral-600 transition-all flex items-center gap-2">
+          <button id="newProjectBtn" class="neomorphic flex items-center gap-2 px-4 py-2 rounded-xl text-neutral-300 hover:text-white text-sm font-medium transition-all relative">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
             </svg>
-            새 프로젝트 템플릿
-            <span class="ml-auto w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+            새로운 템플릿
+            <span class="w-2 h-2 bg-brand-400 rounded-full animate-pulse absolute -top-1 -right-1"></span>
           </button>
-        </div>
-      </div>
 
-      <!-- 검색 -->
-      <div class="px-3 pb-3">
-        <label class="block text-xs text-neutral-400 mb-2 font-medium">검색</label>
-        <div class="relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input id="searchInput" type="search" placeholder="엔드포인트, 설명 검색..." class="w-full rounded-xl border border-neutral-700 bg-neutral-800 pl-10 pr-12 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" />
-          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] text-neutral-500 bg-neutral-700 rounded border border-neutral-600">⌘K</kbd>
-        </div>
-      </div>
-
-      <!-- 엔드포인트 추가 -->
-      <div class="p-3 border-y border-neutral-800">
-        <button id="addEndpointBtn" class="w-full rounded-xl px-4 py-3 text-sm bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white transition-all duration-200 hover:scale-105 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          엔드포인트 추가
-        </button>
-      </div>
-
-      <!-- 엔드포인트 목록 -->
-      <nav id="endpointList" class="px-3 overflow-y-auto grow" aria-label="엔드포인트 목록">
-        <!-- Dynamically rendered -->
-      </nav>
-
-      <div class="p-3 border-t border-neutral-800 bg-neutral-900/50 space-y-3">
-        <button id="keyboardHelpBtn" class="w-full rounded-xl px-3 py-2 text-xs border border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100 transition-colors flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
-          단축키 가이드
-        </button>
-        <div class="flex items-center gap-2 text-[11px] text-neutral-500">
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span>⌘↑↓ 키로 엔드포인트 전환</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main: 엔드포인트 상세 (JSON 전용) -->
-    <main class="p-4 md:p-6 lg:p-8 space-y-6 bg-neutral-950 overflow-x-hidden">
-      <section class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-bold text-neutral-100">엔드포인트 설정</h2>
-          <p class="text-sm text-neutral-400 mt-1">API 엔드포인트를 설정하고 응답을 정의하세요</p>
-        </div>
-        <div class="flex flex-wrap gap-2 items-center">
-          <button id="saveBtn" class="rounded-xl px-4 py-2 text-sm bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white transition-all duration-200 hover:scale-105 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          <button id="exportHtmlBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
             </svg>
-            <span class="hidden sm:inline">저장 (⌘S)</span>
-            <span class="sm:hidden">저장</span>
+            API 명세서 내보내기
           </button>
-          <button id="deleteEndpointBtn" class="rounded-xl px-4 py-2 text-sm border border-red-700/50 bg-red-950/20 text-red-400 hover:bg-red-950/40 hover:border-red-600/50 hover:text-red-300 transition-all flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+
+          <button id="buildBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-glow animate-glow">
+            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
-            삭제
+            Mock 서버 빌드
           </button>
         </div>
-      </section>
+      </div>
+    </header>
 
-      <!-- 기본 정보 -->
-      <section class="bg-neutral-900 rounded-2xl border border-neutral-800 p-4 md:p-6 space-y-4 md:space-y-5">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-          <h3 class="text-lg font-semibold text-neutral-100">기본 정보</h3>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="w-full sm:w-32">
-            <label class="block text-xs text-neutral-400 mb-2 font-medium">HTTP 메서드</label>
-            <select id="method" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all">
-              <option>GET</option><option>POST</option><option>PUT</option>
-              <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
-            </select>
-          </div>
-          <div class="flex-1">
-            <label class="block text-xs text-neutral-400 mb-2 font-medium">엔드포인트 경로</label>
-            <input id="endpoint" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="/users/:id" />
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs text-neutral-400 mb-2 font-medium">설명 (선택사항)</label>
-          <textarea id="description" rows="2" class="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all" placeholder="이 엔드포인트의 기능을 설명해주세요..."></textarea>
-        </div>
-
-      </section>
-
-      <!-- JSON 입력 영역 -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 왼쪽: 요청 관련 -->
-        <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-4">
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs text-neutral-500">Query (JSON)</label>
-              <div class="flex items-center gap-2">
-                <button data-fill="query" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
-                <button data-format="query" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
-              </div>
-            </div>
-            <textarea id="query" rows="6" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"page":1,"q":"car"}'></textarea>
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs text-neutral-500">Headers (JSON)</label>
-              <div class="flex items-center gap-2">
-                <button data-fill="headers" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
-                <button data-format="headers" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
-              </div>
-            </div>
-            <textarea id="headers" rows="4" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"Content-Type":"application/json","Authorization":"Bearer <token>"}'></textarea>
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs text-neutral-500">Request Body (JSON)</label>
-              <div class="flex items-center gap-2">
-                <button data-fill="requestBody" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
-                <button data-format="requestBody" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
-              </div>
-            </div>
-            <textarea id="requestBody" rows="8" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"name":"Alice"}'></textarea>
-          </div>
-        </div>
-
-        <!-- 오른쪽: 응답 관련 -->
-        <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5 space-y-4">
-          <div class="flex items-center gap-2">
-            <label class="block text-xs text-neutral-500 w-24">Response Code</label>
-            <select id="responseStatus" class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 w-36">
-              <option>200</option><option>201</option><option>204</option>
-              <option>400</option><option>401</option><option>403</option><option>404</option>
-              <option>409</option><option>422</option><option>500</option>
-            </select>
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs text-neutral-500">Response (JSON)</label>
-              <div class="flex items-center gap-2">
-                <select id="exampleSelect" class="text-xs rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 hidden"></select>
-                <button data-fill="responseBody" class="sampleBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">샘플</button>
-                <button data-format="responseBody" class="formatBtn text-xs px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-700">포맷 ⌘/Ctrl+I</button>
-              </div>
-            </div>
-            <textarea id="responseBody" rows="10" class="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" placeholder='{"id":1,"name":"Alice"}'></textarea>
-          </div>
-        </div>
-      </section>
-
-      <!-- cURL 미리보기 -->
-      <section class="mt-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-5">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-neutral-600 dark:text-neutral-300">cURL 미리보기</div>
-          <div class="flex items-center gap-2">
-            <button id="copyCurlBtn" class="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Left Sidebar - Endpoints Only -->
+      <aside class="w-80 glass border-r border-glass-200 flex flex-col">
+        <!-- Search & Add -->
+        <div class="p-4 border-b border-glass-200">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></div>
+              엔드포인트
+            </h2>
+            <button id="addEndpointBtn" class="px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
-              복사
             </button>
-            <span id="curlSize" class="text-[10px] text-neutral-500"></span>
+          </div>
+
+          <!-- Smart Search -->
+          <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input id="searchInput" type="search" placeholder="AI 검색: 엔드포인트, 설명..." class="w-full rounded-xl border border-neutral-600 bg-neutral-800/50 pl-12 pr-16 py-3 text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all backdrop-blur-sm" />
+            <kbd class="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-[10px] text-neutral-400 bg-neutral-700/50 rounded-md border border-neutral-600">⌘K</kbd>
           </div>
         </div>
-        <pre id="curlPreview" class="mt-2 p-3 bg-neutral-50 dark:bg-neutral-950 rounded-xl text-xs overflow-x-auto border border-neutral-100 dark:border-neutral-800"></pre>
-      </section>
 
-      <!-- 도움말 / 빈 상태 -->
-      <section id="emptyState" class="rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-6 text-center hidden">
-        <p class="text-sm text-neutral-600 dark:text-neutral-300">왼쪽에서 <b>+ 엔드포인트 추가</b>를 눌러 시작하세요.</p>
-      </section>
-    </main>
+        <!-- Endpoints List -->
+        <div class="flex-1 overflow-hidden">
+          <nav id="endpointList" class="h-full overflow-y-auto px-4 py-2 space-y-2" aria-label="엔드포인트 목록">
+            <!-- Dynamically rendered -->
+          </nav>
+        </div>
+
+        <!-- Bottom Info -->
+        <div class="p-4 border-t border-glass-200 space-y-2">
+          <button id="keyboardHelpBtn" class="w-full neomorphic rounded-xl px-3 py-2 text-sm text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            단축키
+          </button>
+          <div class="text-center text-xs text-neutral-500">
+            <span class="inline-flex items-center gap-1">
+              <kbd class="px-1 py-0.5 bg-neutral-700 rounded text-[10px]">⌘</kbd>
+              <kbd class="px-1 py-0.5 bg-neutral-700 rounded text-[10px]">↑↓</kbd>
+              엔드포인트 전환
+            </span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main: 엔드포인트 상세 -->
+      <main class="flex-1 overflow-hidden">
+        <!-- Editor Header -->
+        <div class="glass border-b border-glass-200 px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span id="methodBadge" class="px-3 py-1 rounded-lg text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg">GET</span>
+              <span id="endpointPath" class="text-lg font-semibold text-white">/api/example</span>
+              <span class="text-neutral-400">•</span>
+              <span class="text-sm text-neutral-400">엔드포인트 설정</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <button id="saveBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                저장 (⌘S)
+              </button>
+              <button id="deleteEndpointBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="h-full overflow-y-auto p-6 pb-16 space-y-8">
+
+          <!-- 기본 정보 -->
+          <section class="neomorphic rounded-2xl p-6 space-y-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-3 h-3 rounded-full bg-gradient-to-r from-brand-400 to-brand-600 animate-pulse"></div>
+              <h3 class="text-xl font-bold text-white">기본 설정</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-neutral-300 mb-3">HTTP 메서드</label>
+                <select id="method" class="w-full rounded-xl border border-neutral-600 bg-neutral-800/50 px-4 py-3 text-sm text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm">
+                  <option>GET</option><option>POST</option><option>PUT</option>
+                  <option>PATCH</option><option>DELETE</option><option>HEAD</option><option>OPTIONS</option>
+                </select>
+              </div>
+              <div class="md:col-span-3">
+                <label class="block text-sm font-medium text-neutral-300 mb-3">엔드포인트 경로</label>
+                <input id="endpoint" class="w-full rounded-xl border border-neutral-600 bg-neutral-800/50 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder="/api/users/:id" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-neutral-300 mb-3">설명</label>
+              <textarea id="description" rows="3" class="w-full rounded-xl border border-neutral-600 bg-neutral-800/50 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder="이 API 엔드포인트의 기능과 목적을 설명해주세요..."></textarea>
+            </div>
+          </section>
+
+          <!-- Bento Grid 레이아웃 -->
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <!-- Request 섹션 -->
+            <div class="space-y-6">
+              <div class="neomorphic rounded-2xl p-6">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 animate-pulse"></div>
+                  <h3 class="text-xl font-bold text-white">Request</h3>
+                </div>
+                <div class="space-y-6">
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <label class="text-sm font-medium text-neutral-300">Query Parameters</label>
+                      <div class="flex items-center gap-2">
+                        <button data-fill="query" class="sampleBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">샘플</button>
+                        <button data-format="query" class="formatBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">포맷 ⌘I</button>
+                      </div>
+                    </div>
+                    <textarea id="query" rows="4" class="code-editor w-full rounded-xl border border-neutral-600 bg-neutral-800/30 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder='{"page": 1, "limit": 10}'></textarea>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <label class="text-sm font-medium text-neutral-300">Headers</label>
+                      <div class="flex items-center gap-2">
+                        <button data-fill="headers" class="sampleBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">샘플</button>
+                        <button data-format="headers" class="formatBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">포맷 ⌘I</button>
+                      </div>
+                    </div>
+                    <textarea id="headers" rows="4" class="code-editor w-full rounded-xl border border-neutral-600 bg-neutral-800/30 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder='{"Authorization": "Bearer token"}'></textarea>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <label class="text-sm font-medium text-neutral-300">Request Body</label>
+                      <div class="flex items-center gap-2">
+                        <button data-fill="requestBody" class="sampleBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">샘플</button>
+                        <button data-format="requestBody" class="formatBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">포맷 ⌘I</button>
+                      </div>
+                    </div>
+                    <textarea id="requestBody" rows="8" class="code-editor w-full rounded-xl border border-neutral-600 bg-neutral-800/30 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder='{"name": "John Doe"}'></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Response 섹션 -->
+            <div class="space-y-6">
+              <div class="neomorphic rounded-2xl p-6">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-green-400 animate-pulse"></div>
+                  <h3 class="text-xl font-bold text-white">Response</h3>
+                </div>
+                <div class="space-y-6">
+                  <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-3">Status Code</label>
+                    <select id="responseStatus" class="w-full rounded-xl border border-neutral-600 bg-neutral-800/50 px-4 py-3 text-sm text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm">
+                      <option>200</option><option>201</option><option>204</option>
+                      <option>400</option><option>401</option><option>403</option><option>404</option>
+                      <option>409</option><option>422</option><option>500</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <label class="text-sm font-medium text-neutral-300">Response Body</label>
+                      <div class="flex items-center gap-2">
+                        <select id="exampleSelect" class="text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 px-2 py-1 hidden"></select>
+                        <button data-fill="responseBody" class="sampleBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">샘플</button>
+                        <button data-format="responseBody" class="formatBtn px-3 py-1 text-xs rounded-lg border border-neutral-600 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600/50 hover:text-white transition-all">포맷 ⌘I</button>
+                      </div>
+                    </div>
+                    <textarea id="responseBody" rows="10" class="code-editor w-full rounded-xl border border-neutral-600 bg-neutral-800/30 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all backdrop-blur-sm" placeholder='{"id": 1, "name": "John Doe"}'></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- cURL 미리보기 -->
+          <section class="neomorphic rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-pulse"></div>
+              <h3 class="text-xl font-bold text-white">cURL 미리보기</h3>
+              <div class="ml-auto flex items-center gap-3">
+                <span id="curlSize" class="text-xs text-neutral-400 px-2 py-1 bg-neutral-700/50 rounded-lg"></span>
+                <button id="copyCurlBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+                  <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                  </svg>
+                  복사
+                </button>
+              </div>
+            </div>
+            <div class="relative">
+              <pre id="curlPreview" class="code-editor p-4 bg-neutral-900/50 rounded-xl text-sm overflow-x-auto border border-neutral-600 backdrop-blur-sm text-neutral-100 shadow-inner-glow"></pre>
+            </div>
+          </section>
+
+          <!-- 빈 상태 -->
+          <section id="emptyState" class="neomorphic rounded-2xl p-12 text-center hidden">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+              <svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-2">엔드포인트를 추가하세요</h4>
+            <p class="text-neutral-400 text-sm leading-relaxed mb-6">좌측 사이드바에서 <b>+ 버튼</b>을 클릭하여<br>API 엔드포인트를 생성하고 시작하세요</p>
+            <div class="flex items-center justify-center gap-4 text-xs text-neutral-500">
+              <div class="flex items-center gap-1">
+                <kbd class="px-2 py-1 bg-neutral-700 rounded">⌘</kbd>
+                <kbd class="px-2 py-1 bg-neutral-700 rounded">N</kbd>
+                <span>새 엔드포인트</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
   </div>
 
   <!-- 버전 관리 모달 -->
@@ -363,25 +528,25 @@
         </button>
       </div>
       <div class="grid gap-3">
-        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-          <span class="text-sm text-neutral-700 dark:text-neutral-300">저장</span>
-          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘S</kbd>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-800">
+          <span class="text-sm text-neutral-300">저장</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-neutral-700 text-neutral-100 border border-neutral-600 rounded">⌘S</kbd>
         </div>
-        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-          <span class="text-sm text-neutral-700 dark:text-neutral-300">JSON 포맷</span>
-          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘I</kbd>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-800">
+          <span class="text-sm text-neutral-300">JSON 포맷</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-neutral-700 text-neutral-100 border border-neutral-600 rounded">⌘I</kbd>
         </div>
-        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-          <span class="text-sm text-neutral-700 dark:text-neutral-300">검색 포커스</span>
-          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘K</kbd>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-800">
+          <span class="text-sm text-neutral-300">검색 포커스</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-neutral-700 text-neutral-100 border border-neutral-600 rounded">⌘K</kbd>
         </div>
-        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-          <span class="text-sm text-neutral-700 dark:text-neutral-300">엔드포인트 전환</span>
-          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">⌘↑↓</kbd>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-800">
+          <span class="text-sm text-neutral-300">엔드포인트 전환</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-neutral-700 text-neutral-100 border border-neutral-600 rounded">⌘↑↓</kbd>
         </div>
-        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-          <span class="text-sm text-neutral-700 dark:text-neutral-300">들여쓰기</span>
-          <kbd class="px-2 py-1 text-xs font-mono bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded">Tab</kbd>
+        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-800">
+          <span class="text-sm text-neutral-300">들여쓰기</span>
+          <kbd class="px-2 py-1 text-xs font-mono bg-neutral-700 text-neutral-100 border border-neutral-600 rounded">Tab</kbd>
         </div>
       </div>
     </div>
@@ -526,7 +691,7 @@
       filtered.forEach(ep => {
         const isActive = project.selectedId === ep.id;
         const row = document.createElement('button');
-        row.className = `w-full text-left px-3 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 ${isActive ? 'bg-brand-50/70 dark:bg-brand-700/10' : ''}`;
+        row.className = `w-full text-left px-3 py-3 text-neutral-100 hover:bg-neutral-800 hover:text-white transition-colors ${isActive ? 'bg-brand-700/20 text-white' : ''}`;
         row.innerHTML = `<div class="flex items-center justify-between">
           <div class="min-w-0">
             <div class="text-xs font-medium truncate"><span class="me-2 inline-flex px-1.5 py-0.5 rounded border text-[10px] ${badgeClass(ep.method)}">${ep.method}</span>${ep.path || '<span class="text-neutral-400">/path</span>'}</div>
@@ -785,7 +950,11 @@
      * ------------------------------*/
     $('#addEndpointBtn').addEventListener('click', addEndpoint);
     $('#deleteEndpointBtn').addEventListener('click', deleteEndpoint);
-    $('#saveBtn').addEventListener('click', () => { collectFromEditor(); saveProject(); });
+    $('#saveBtn').addEventListener('click', () => {
+      collectFromEditor();
+      saveProject();
+      showToast('저장 완료!', 'success');
+    });
     $('#searchInput').addEventListener('input', renderList);
     $('#keyboardHelpBtn')?.addEventListener('click', () => $('#kbdModal').showModal());
 
@@ -820,18 +989,101 @@
     // Force dark mode always
     document.documentElement.classList.add('dark');
 
+
     /** -----------------------------
-     * Toast helper
+     * Enhanced Toast with Modern Effects
      * ------------------------------*/
-    function showToast(msg){
+    function showToast(msg, type = 'success'){
       const t = $('#toast');
       t.textContent = msg;
-      t.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 px-3 py-2 text-sm rounded-xl bg-neutral-900 text-white shadow-soft';
-      t.style.opacity = '0'; t.style.transition = 'opacity .2s ease';
+
+      // Different styles based on type
+      const styles = {
+        success: 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-glow',
+        error: 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg',
+        info: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
+        warning: 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg'
+      };
+
+      t.className = `fixed left-1/2 -translate-x-1/2 bottom-6 px-6 py-3 text-sm rounded-xl ${styles[type] || styles.success} backdrop-blur-sm transform transition-all duration-300 z-[60]`;
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(20px) scale(0.9)';
       t.classList.remove('hidden');
-      requestAnimationFrame(()=>{ t.style.opacity = '1'; });
-      setTimeout(()=>{ t.style.opacity = '0'; setTimeout(()=>t.classList.add('hidden'), 200); }, 1500);
+
+      requestAnimationFrame(() => {
+        t.style.opacity = '1';
+        t.style.transform = 'translateX(-50%) translateY(0px) scale(1)';
+      });
+
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(-20px) scale(0.9)';
+        setTimeout(() => t.classList.add('hidden'), 300);
+      }, 2500);
     }
+
+    /** -----------------------------
+     * Enhanced Animations & Effects
+     * ------------------------------*/
+    function initEnhancedEffects() {
+      // Floating animation for key elements
+      const floatingElements = $$('.animate-float');
+      floatingElements.forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.5}s`;
+      });
+
+      // Intersection Observer for fade-in effects
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            entry.target.classList.remove('opacity-0', 'translate-y-4');
+          }
+        });
+      }, observerOptions);
+
+      // Observe sections for scroll animations
+      $$('section').forEach(section => {
+        section.classList.add('opacity-0', 'translate-y-4', 'transition-all', 'duration-700');
+        observer.observe(section);
+      });
+
+      // Add ripple effect to buttons
+      $$('button').forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          ripple.classList.add('ripple');
+          this.appendChild(ripple);
+
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.style.position = 'absolute';
+          ripple.style.borderRadius = '50%';
+          ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+          ripple.style.transform = 'scale(0)';
+          ripple.style.animation = 'ripple 0.6s linear';
+          ripple.style.pointerEvents = 'none';
+
+          setTimeout(() => ripple.remove(), 600);
+        });
+      });
+    }
+
+    // Initialize all enhancements
+    document.addEventListener('DOMContentLoaded', () => {
+      initEnhancedEffects();
+    });
 
 
     // Seed if empty
