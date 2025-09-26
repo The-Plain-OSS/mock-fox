@@ -35,8 +35,9 @@ async function boot() {
       "method","endpoint","description",
       "query","headers","requestBody",
       "responseStatus","responseBody",
-      "saveBtn","deleteEndpointBtn",
+      "deleteEndpointBtn",
       "copyCurlBtn","curlPreview",
+      "modeToggle", "interfaceMode", "codeMode"
     ];
     const missing = required.filter(id => !$(id));
     if (missing.length) return fatal("필수 요소 누락: " + missing.join(", "));
@@ -44,6 +45,7 @@ async function boot() {
     // ========== 프로젝트(좌측) ==========
     $("projectName").value = project.name || "";
     applyProjectMeta();
+    updateProjectStats();
 
     $("projectName").addEventListener("input", (e) => { project.name = e.target.value; saveProject(); applyProjectMeta(); });
 
@@ -105,6 +107,244 @@ async function boot() {
     });
 
     // 새프로젝트 버튼은 이제 templateUI에서 처리합니다
+
+    // ========== 모드 토글 기능 ==========
+    let currentMode = 'interface'; // 'interface' or 'code'
+
+    // 모드 전환 함수
+    function switchMode(mode) {
+      const interfaceMode = $('interfaceMode');
+      const codeMode = $('codeMode');
+      const modeToggle = $('modeToggle');
+      const modeToggleCircle = document.getElementById('modeToggleCircle');
+      const interfaceLabel = document.getElementById('interfaceLabel');
+      const codeLabel = document.getElementById('codeLabel');
+
+      if (mode === 'code') {
+        // 코드 모드로 전환
+        currentMode = 'code';
+        interfaceMode.classList.add('hidden');
+        codeMode.classList.remove('hidden');
+        modeToggleCircle.style.transform = 'translateX(24px)';
+        modeToggleCircle.classList.remove('bg-gradient-to-r', 'from-emerald-500', 'to-green-500');
+        modeToggleCircle.classList.add('bg-gradient-to-r', 'from-purple-500', 'to-indigo-500');
+        interfaceLabel.classList.add('text-neutral-400');
+        interfaceLabel.classList.remove('text-white');
+        codeLabel.classList.remove('text-neutral-400');
+        codeLabel.classList.add('text-white');
+
+        // 인터페이스 데이터를 코드로 동기화
+        syncInterfaceToCode();
+      } else {
+        // 인터페이스 모드로 전환
+        currentMode = 'interface';
+        codeMode.classList.add('hidden');
+        interfaceMode.classList.remove('hidden');
+        modeToggleCircle.style.transform = 'translateX(0px)';
+        modeToggleCircle.classList.remove('bg-gradient-to-r', 'from-purple-500', 'to-indigo-500');
+        modeToggleCircle.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-green-500');
+        codeLabel.classList.add('text-neutral-400');
+        codeLabel.classList.remove('text-white');
+        interfaceLabel.classList.remove('text-neutral-400');
+        interfaceLabel.classList.add('text-white');
+
+        // 코드 데이터를 인터페이스로 동기화
+        syncCodeToInterface();
+      }
+    }
+
+    // 인터페이스 데이터를 코드로 동기화
+    function syncInterfaceToCode() {
+      const codeEditor = document.getElementById('codeEditor');
+      if (!codeEditor) return;
+
+      const projectData = {
+        name: project.name || "",
+        endpoints: project.endpoints.map(ep => ({
+          id: ep.id,
+          method: ep.method || "GET",
+          path: ep.path || "/",
+          description: ep.description || "",
+          query: ep.query,
+          headers: ep.headers,
+          requestBody: ep.body,
+          responseStatus: ep.responseStatus || 200,
+          responseBody: ep.responseBody
+        }))
+      };
+
+      codeEditor.value = JSON.stringify(projectData, null, 2);
+      updateCodeValidation();
+    }
+
+    // 코드 데이터를 인터페이스로 동기화
+    function syncCodeToInterface() {
+      const codeEditor = document.getElementById('codeEditor');
+      if (!codeEditor) return;
+
+      try {
+        const codeData = JSON.parse(codeEditor.value);
+
+        // 프로젝트 이름 업데이트
+        if (codeData.name) {
+          project.name = codeData.name;
+          $("projectName").value = project.name;
+        }
+
+        // 엔드포인트 업데이트
+        if (Array.isArray(codeData.endpoints)) {
+          project.endpoints = codeData.endpoints.map(ep => ({
+            id: ep.id || uuid(),
+            method: ep.method || "GET",
+            path: ep.path || "/",
+            description: ep.description || "",
+            query: ep.query || null,
+            headers: ep.headers || null,
+            body: ep.requestBody || null,
+            responseStatus: ep.responseStatus || 200,
+            responseBody: ep.responseBody || null
+          }));
+        }
+
+        saveProject();
+        applyProjectMeta();
+        renderSidebar();
+
+        // 첫 번째 엔드포인트 선택
+        if (project.endpoints[0]) {
+          selectEndpoint(project.endpoints[0].id);
+        } else {
+          clearForm();
+        }
+
+      } catch (error) {
+        console.error('코드 파싱 오류:', error);
+        showToast('코드 형식이 올바르지 않습니다.', 'error');
+      }
+    }
+
+
+    // 코드 검증 함수
+    function updateCodeValidation() {
+      const codeEditor = document.getElementById('codeEditor');
+      const validationStatus = document.getElementById('validationStatus');
+      const lineCol = document.getElementById('lineCol');
+
+      if (!codeEditor || !validationStatus) return;
+
+      try {
+        JSON.parse(codeEditor.value);
+        validationStatus.textContent = '✓ 유효한 JSON';
+        validationStatus.className = 'text-xs text-emerald-400';
+      } catch (error) {
+        validationStatus.textContent = '✗ JSON 오류: ' + error.message;
+        validationStatus.className = 'text-xs text-red-400';
+      }
+
+      // 커서 위치 업데이트
+      if (lineCol) {
+        const lines = codeEditor.value.substr(0, codeEditor.selectionStart).split('\n');
+        const line = lines.length;
+        const col = lines[lines.length - 1].length + 1;
+        lineCol.textContent = `${line}:${col}`;
+      }
+    }
+
+    // 모드 토글 이벤트 리스너
+    $('modeToggle').addEventListener('click', () => {
+      switchMode(currentMode === 'interface' ? 'code' : 'interface');
+    });
+
+    // 코드 에디터 이벤트 리스너들 - 즉시 또는 DOM 로드 후
+    function setupCodeEditor() {
+      const codeEditor = document.getElementById('codeEditor');
+      console.log('코드 에디터 검색:', codeEditor);
+
+      if (codeEditor) {
+        console.log('코드 에디터 이벤트 리스너 등록 중...');
+
+        // 실시간 검증 및 자동저장
+        let codeAutoSaveTimeout;
+        const debouncedCodeAutoSave = () => {
+          clearTimeout(codeAutoSaveTimeout);
+          codeAutoSaveTimeout = setTimeout(() => {
+            console.log('자동저장 시도 중...');
+            try {
+              JSON.parse(codeEditor.value); // 검증
+              console.log('JSON 유효함, syncCodeToInterface 호출');
+              syncCodeToInterface();
+            } catch (error) {
+              console.log('JSON 파싱 오류 (자동저장 스킵):', error.message);
+            }
+          }, 1000); // 1초 후 자동저장
+        };
+
+        codeEditor.addEventListener('input', () => {
+          console.log('코드 에디터 input 이벤트!');
+          updateCodeValidation();
+          debouncedCodeAutoSave();
+        });
+        codeEditor.addEventListener('keyup', updateCodeValidation);
+        codeEditor.addEventListener('click', updateCodeValidation);
+
+        // 탭 키 지원
+        codeEditor.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = codeEditor.selectionStart;
+            const end = codeEditor.selectionEnd;
+            codeEditor.value = codeEditor.value.substring(0, start) + '  ' + codeEditor.value.substring(end);
+            codeEditor.selectionStart = codeEditor.selectionEnd = start + 2;
+            updateCodeValidation();
+          }
+        });
+      }
+
+      // 템플릿 버튼들 이벤트 리스너
+      const templateButtons = [
+        { id: 'restApiTemplate', template: getRestApiTemplate },
+        { id: 'crudTemplate', template: getCrudTemplate },
+        { id: 'authTemplate', template: getAuthTemplate },
+        { id: 'ecommerceTemplate', template: getEcommerceTemplate }
+      ];
+
+      templateButtons.forEach(({ id, template }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            codeEditor.value = JSON.stringify(template(), null, 2);
+            updateCodeValidation();
+            showToast('템플릿이 로드되었습니다.', 'success');
+          });
+        }
+      });
+    }
+
+    // 즉시 시도
+    setupCodeEditor();
+
+    // DOM이 아직 로드되지 않았다면 DOMContentLoaded에서도 시도
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupCodeEditor);
+    }
+
+    // 토스트 메시지 표시 함수
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white text-sm font-medium transition-all duration-300 transform translate-x-full z-50 ${
+        type === 'success' ? 'bg-emerald-600' :
+        type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+      }`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      // 애니메이션
+      setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+      setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
 
     // ========== 엔드포인트 목록/검색/추가 ==========
     $("searchInput").addEventListener("input", (e) => renderSidebar(e.target.value));
@@ -219,24 +459,39 @@ async function boot() {
       catch { alert(errMsg); throw new Error(errMsg); }
     }
 
-    // 저장
-    $("saveBtn").addEventListener("click", () => {
+    // 자동저장 함수
+    function autoSave() {
       const current = getCurrent();
-      if (!current) return alert("먼저 엔드포인트를 추가하세요.");
+      if (!current) return;
 
-      const data = collectForm();
-      if (!data.path?.startsWith("/")) return alert("엔드포인트는 / 로 시작해야 합니다.");
+      try {
+        const data = collectForm();
+        if (data.path && !data.path.startsWith("/")) {
+          console.warn("엔드포인트는 / 로 시작해야 합니다.");
+          return;
+        }
 
-      const i = project.endpoints.findIndex(e => e.id === current.id);
-      project.endpoints[i] = { ...project.endpoints[i], ...data };
-      saveProject();
+        const i = project.endpoints.findIndex(e => e.id === current.id);
+        if (i >= 0) {
+          project.endpoints[i] = { ...project.endpoints[i], ...data };
+          saveProject();
+          console.log("[renderer] auto-saved:", project.endpoints[i]);
+          ipc.send("save-spec", project.endpoints[i]);
+          renderSidebar($("searchInput").value);
+          updateCurlPreview();
+          updateProjectStats();
+        }
+      } catch (error) {
+        console.error("자동저장 오류:", error);
+      }
+    }
 
-
-      console.log("[renderer] saved:", project.endpoints[i]);
-      ipc.send("save-spec", project.endpoints[i]);
-      renderSidebar($("searchInput").value);
-      updateCurlPreview();
-    });
+    // 자동저장을 위한 디바운스 함수
+    let autoSaveTimeout;
+    function debouncedAutoSave() {
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(autoSave, 500); // 500ms 후 자동저장
+    }
 
     // 삭제
     $("deleteEndpointBtn").addEventListener("click", () => {
@@ -305,12 +560,37 @@ async function boot() {
       }
     });
 
+    // 폼 입력 요소들에 자동저장 이벤트 리스너 추가
+    const formInputs = ["method", "endpoint", "description", "query", "headers", "requestBody", "responseStatus", "responseBody"];
+    formInputs.forEach(id => {
+      const element = $(id);
+      if (element) {
+        element.addEventListener("input", debouncedAutoSave);
+        element.addEventListener("change", debouncedAutoSave);
+      }
+    });
+
     // 초기 렌더
     renderSidebar();
     if (project.endpoints[0]) selectEndpoint(project.endpoints[0].id);
 
     // 유틸
-    function applyProjectMeta(){ updateProjectMeta?.(); }
+    function applyProjectMeta(){ updateProjectMeta?.(); updateProjectStats(); }
+
+    function updateProjectStats() {
+      const statsEndpoints = document.getElementById('statsEndpoints');
+      const statsModified = document.getElementById('statsModified');
+
+      if (statsEndpoints) {
+        statsEndpoints.textContent = `${project.endpoints.length}개`;
+      }
+
+      if (statsModified) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        statsModified.textContent = timeStr;
+      }
+    }
     function toSafeFilename(name){
       return (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     }
@@ -508,4 +788,209 @@ func toString(v interface{}) string {
 }
 `.trim();
 }
+
+    // ========== AI 친화적 템플릿 함수들 ==========
+    function getRestApiTemplate() {
+      return {
+        name: "REST API 프로젝트",
+        endpoints: [
+          {
+            id: uuid(),
+            method: "GET",
+            path: "/api/users",
+            description: "사용자 목록 조회",
+            query: { page: 1, limit: 10 },
+            headers: { "Content-Type": "application/json" },
+            requestBody: null,
+            responseStatus: 200,
+            responseBody: {
+              users: [
+                { id: 1, name: "John Doe", email: "john@example.com" },
+                { id: 2, name: "Jane Smith", email: "jane@example.com" }
+              ],
+              pagination: { page: 1, limit: 10, total: 2 }
+            }
+          },
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/users",
+            description: "새 사용자 생성",
+            query: null,
+            headers: { "Content-Type": "application/json" },
+            requestBody: { name: "New User", email: "user@example.com" },
+            responseStatus: 201,
+            responseBody: { id: 3, name: "New User", email: "user@example.com", created_at: "2024-01-01T00:00:00Z" }
+          }
+        ]
+      };
+    }
+
+    function getCrudTemplate() {
+      return {
+        name: "CRUD API 프로젝트",
+        endpoints: [
+          {
+            id: uuid(),
+            method: "GET",
+            path: "/api/products",
+            description: "제품 목록 조회",
+            query: { category: "electronics", sort: "name" },
+            headers: { "Content-Type": "application/json" },
+            requestBody: null,
+            responseStatus: 200,
+            responseBody: [
+              { id: 1, name: "Laptop", price: 999.99, category: "electronics" },
+              { id: 2, name: "Phone", price: 599.99, category: "electronics" }
+            ]
+          },
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/products",
+            description: "새 제품 생성",
+            query: null,
+            headers: { "Content-Type": "application/json" },
+            requestBody: { name: "New Product", price: 299.99, category: "electronics" },
+            responseStatus: 201,
+            responseBody: { id: 3, name: "New Product", price: 299.99, category: "electronics", created_at: "2024-01-01T00:00:00Z" }
+          },
+          {
+            id: uuid(),
+            method: "PUT",
+            path: "/api/products/{id}",
+            description: "제품 정보 수정",
+            query: null,
+            headers: { "Content-Type": "application/json" },
+            requestBody: { name: "Updated Product", price: 399.99 },
+            responseStatus: 200,
+            responseBody: { id: 1, name: "Updated Product", price: 399.99, category: "electronics", updated_at: "2024-01-01T00:00:00Z" }
+          },
+          {
+            id: uuid(),
+            method: "DELETE",
+            path: "/api/products/{id}",
+            description: "제품 삭제",
+            query: null,
+            headers: null,
+            requestBody: null,
+            responseStatus: 204,
+            responseBody: null
+          }
+        ]
+      };
+    }
+
+    function getAuthTemplate() {
+      return {
+        name: "인증 API 프로젝트",
+        endpoints: [
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/auth/login",
+            description: "사용자 로그인",
+            query: null,
+            headers: { "Content-Type": "application/json" },
+            requestBody: { email: "user@example.com", password: "password123" },
+            responseStatus: 200,
+            responseBody: {
+              access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              refresh_token: "dGVzdC1yZWZyZXNoLXRva2Vu",
+              expires_in: 3600,
+              user: { id: 1, email: "user@example.com", name: "John Doe" }
+            }
+          },
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/auth/refresh",
+            description: "토큰 갱신",
+            query: null,
+            headers: { "Content-Type": "application/json" },
+            requestBody: { refresh_token: "dGVzdC1yZWZyZXNoLXRva2Vu" },
+            responseStatus: 200,
+            responseBody: {
+              access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              expires_in: 3600
+            }
+          },
+          {
+            id: uuid(),
+            method: "GET",
+            path: "/api/auth/profile",
+            description: "사용자 프로필 조회",
+            query: null,
+            headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+            requestBody: null,
+            responseStatus: 200,
+            responseBody: { id: 1, email: "user@example.com", name: "John Doe", created_at: "2024-01-01T00:00:00Z" }
+          }
+        ]
+      };
+    }
+
+    function getEcommerceTemplate() {
+      return {
+        name: "이커머스 API 프로젝트",
+        endpoints: [
+          {
+            id: uuid(),
+            method: "GET",
+            path: "/api/products",
+            description: "상품 목록 조회",
+            query: { category: "clothing", page: 1, limit: 20 },
+            headers: { "Content-Type": "application/json" },
+            requestBody: null,
+            responseStatus: 200,
+            responseBody: {
+              products: [
+                { id: 1, name: "T-Shirt", price: 29.99, category: "clothing", stock: 100 },
+                { id: 2, name: "Jeans", price: 59.99, category: "clothing", stock: 50 }
+              ],
+              pagination: { page: 1, limit: 20, total: 2, total_pages: 1 }
+            }
+          },
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/cart",
+            description: "장바구니에 상품 추가",
+            query: null,
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer token" },
+            requestBody: { product_id: 1, quantity: 2 },
+            responseStatus: 200,
+            responseBody: {
+              cart: {
+                id: 1,
+                items: [{ product_id: 1, quantity: 2, price: 29.99, total: 59.98 }],
+                total_amount: 59.98
+              }
+            }
+          },
+          {
+            id: uuid(),
+            method: "POST",
+            path: "/api/orders",
+            description: "주문 생성",
+            query: null,
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer token" },
+            requestBody: {
+              items: [{ product_id: 1, quantity: 2 }],
+              shipping_address: "123 Main St, City, Country",
+              payment_method: "credit_card"
+            },
+            responseStatus: 201,
+            responseBody: {
+              order: {
+                id: "ORD-001",
+                status: "pending",
+                total_amount: 59.98,
+                created_at: "2024-01-01T00:00:00Z"
+              }
+            }
+          }
+        ]
+      };
+    }
 }
