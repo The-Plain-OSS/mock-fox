@@ -56,13 +56,13 @@ jobs:
           ## 🚀 Mock Fox ${{ github.event.inputs.version || github.ref_name }}
 
           ### 다운로드
-          - **Windows 사용자**: 아래 `Mock-Fox-*-Setup.exe` 파일을 다운로드하여 설치하세요.
+          - **Windows 사용자**: 아래 `Mock-Fox-*.exe` 파일을 다운로드하세요.
 
-          ### 설치 방법
-          1. Setup.exe 파일 다운로드
-          2. 다운로드한 파일 실행
-          3. 설치 마법사를 따라 진행
-          4. 바탕화면 또는 시작 메뉴에서 Mock Fox 실행
+          ### 사용 방법
+          1. `Mock-Fox-*.exe` 파일 다운로드
+          2. 다운로드한 파일을 원하는 폴더에 저장
+          3. 파일을 더블클릭으로 실행
+          4. **설치 불필요** - 바로 사용 가능!
 
           ### 주요 기능
           - API 명세 작성 및 Mock 서버 생성
@@ -72,16 +72,17 @@ jobs:
 
           ### 시스템 요구사항
           - Windows 10 이상 (x64)
+          - 포터블 실행파일 - 설치 불필요
           - 별도 런타임 설치 불필요
         draft: false
         prerelease: false
 
-    - name: Upload Windows Installer
+    - name: Upload Windows Portable
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/Mock-Fox-*-Setup.exe
-        asset_name: Mock-Fox-${{ github.event.inputs.version || github.ref_name }}-Setup.exe
+        asset_path: ./dist/Mock-Fox-*.exe
+        asset_name: Mock-Fox-${{ github.event.inputs.version || github.ref_name }}.exe
         asset_content_type: application/octet-stream

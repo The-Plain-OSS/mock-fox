@@ -1,6 +1,6 @@
 # 빌드 가이드
 
-## Windows 설치파일 빌드
+## Windows 포터블 실행파일 빌드
 
 ### 사전 요구사항
 - **Node.js** 18.x LTS 이상
@@ -20,14 +20,14 @@ npm install
 # (개발 환경에서는 시스템 Go를 사용)
 ```
 
-3. **Windows 설치파일 빌드**
+3. **Windows 포터블 실행파일 빌드**
 ```bash
 npm run build:win:release
 ```
 
 4. **빌드 결과 확인**
-- `dist/Mock-Fox-R2.0.0-Setup.exe` 파일 생성 확인
-- 설치파일 크기: 약 200-300MB (Go 런타임 포함)
+- `dist/Mock-Fox-R2.0.0.exe` 파일 생성 확인
+- 실행파일 크기: 약 200-300MB (Go 런타임 포함)
 
 ### GitHub 릴리즈 업로드
 
@@ -39,9 +39,9 @@ git push origin v2.0.0
 ```
 
 2. GitHub Actions가 자동으로:
-   - Windows 설치파일 빌드
+   - Windows 포터블 실행파일 빌드
    - GitHub 릴리즈 생성
-   - 설치파일 업로드
+   - 실행파일 업로드
 
 #### 수동 릴리즈
 1. 로컬에서 빌드:
@@ -51,24 +51,22 @@ npm run build:win:release
 
 2. GitHub 릴리즈 페이지에서:
    - 새 릴리즈 생성
-   - `dist/Mock-Fox-*-Setup.exe` 파일 업로드
+   - `dist/Mock-Fox-*.exe` 파일 업로드
    - 릴리즈 노트 작성
 
-### 사용자 설치 가이드
+### 사용자 사용 가이드
 
-설치파일을 다운로드한 사용자는:
+실행파일을 다운로드한 사용자는:
 
-1. `Mock-Fox-R2.0.0-Setup.exe` 실행
-2. 설치 마법사 진행:
-   - 라이선스 동의
-   - 설치 경로 선택 (기본: `%LOCALAPPDATA%\Programs\Mock Fox`)
-   - 바탕화면/시작메뉴 바로가기 생성 선택
-3. 설치 완료 후 바로 실행 가능
+1. `Mock-Fox-R2.0.0.exe` 다운로드
+2. 원하는 폴더에 저장 (예: 바탕화면, Documents 등)
+3. 더블클릭으로 바로 실행
+4. **설치 불필요** - 포터블 애플리케이션
 
 ### 빌드 결과물
 
-- **설치파일**: `Mock-Fox-R2.0.0-Setup.exe` (~250MB)
-- **설치 후 크기**: ~300MB (Go 런타임 포함)
+- **실행파일**: `Mock-Fox-R2.0.0.exe` (~250MB)
+- **포터블**: 별도 설치 없이 바로 실행
 - **시스템 요구사항**: Windows 10 x64 이상
 
 ### 문제 해결
@@ -78,14 +76,14 @@ npm run build:win:release
 2. `node_modules` 삭제 후 재설치
 3. Windows Defender 실시간 보호 일시 해제
 
-#### 설치파일 실행 안됨
+#### 실행파일 실행 안됨
 1. Windows SmartScreen 경고 - "추가 정보" → "실행" 선택
 2. 바이러스 백신 소프트웨어 예외 처리 추가
 
 ### 배포 체크리스트
 
 - [ ] 로컬에서 빌드 테스트 완료
-- [ ] 설치파일 실행 및 앱 기동 확인
+- [ ] 실행파일 실행 및 앱 기동 확인
 - [ ] Mock 서버 생성 기능 동작 확인
 - [ ] 릴리즈 노트 작성
 - [ ] GitHub 릴리즈 업로드

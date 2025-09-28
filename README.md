@@ -51,14 +51,14 @@ RESTful API 명세를 작성하고, 클릭 한 번으로 **실행 가능한 로�
 
 **📥 [최신 릴리즈 다운로드](https://github.com/The-Plain-OSS/mock-fox/releases)**
 
-- **Windows**: `Mock-Fox-R2.0.0-Setup.exe` 다운로드 → 실행 → 설치 완료
+- **Windows**: `Mock-Fox-R2.0.0.exe` 다운로드 → 바로 실행
 - **macOS**: 준비 중
 
-#### Windows 설치 방법
-1. 위 링크에서 `Mock-Fox-*-Setup.exe` 파일 다운로드
-2. 다운로드한 파일 실행 (Windows SmartScreen 경고 시 "추가 정보" → "실행")
-3. 설치 마법사를 따라 진행
-4. 바탕화면 또는 시작 메뉴에서 Mock Fox 실행
+#### Windows 사용 방법
+1. 위 링크에서 `Mock-Fox-*.exe` 파일 다운로드
+2. 다운로드한 파일을 원하는 폴더에 저장
+3. 파일을 더블클릭으로 실행 (Windows SmartScreen 경고 시 "추가 정보" → "실행")
+4. **설치 불필요** - 바로 사용 가능!
 
 ### Option 2: 소스코드에서 빌드
 
