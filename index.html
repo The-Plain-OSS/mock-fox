@@ -152,6 +152,19 @@
         opacity: 0;
       }
     }
+
+    /* 엔드포인트 리스트 스타일 강제 적용 */
+    #endpointList button:not(.endpoint-active):hover {
+      background-color: rgba(64, 64, 64, 0.5) !important;
+      border: 1px solid rgba(115, 115, 115, 0.5) !important;
+    }
+
+    #endpointList button.endpoint-active {
+      background-color: rgba(147, 51, 234, 0.2) !important;
+      border: 2px solid rgb(168, 85, 247) !important;
+      box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.3) !important;
+      transform: scale(1.02);
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100 font-sans overflow-hidden">
@@ -185,7 +198,6 @@
         <div class="flex items-center gap-4">
           <!-- Interface/Code Mode Toggle -->
           <div class="flex items-center gap-3 px-4 py-2 neomorphic rounded-xl">
-            <span class="text-sm font-medium text-neutral-400">모드</span>
             <div class="flex items-center gap-2">
               <span id="interfaceLabel" class="text-xs font-medium text-white">인터페이스</span>
               <button id="modeToggle" class="relative w-12 h-6 bg-neutral-700 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
@@ -286,52 +298,36 @@
               </div>
             </div>
           </div>
-          <div class="text-center text-xs text-neutral-500">
-            <span class="inline-flex items-center gap-1">
-              <kbd class="px-1 py-0.5 bg-neutral-700 rounded text-[10px]">⌘</kbd>
-              <kbd class="px-1 py-0.5 bg-neutral-700 rounded text-[10px]">↑↓</kbd>
-              엔드포인트 전환
-            </span>
-          </div>
         </div>
       </aside>
 
       <!-- Main: 인터페이스 모드 -->
       <main id="interfaceMode" class="flex-1 overflow-hidden">
-        <!-- Editor Header -->
-        <div class="glass border-b border-glass-200 px-6 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span id="methodBadge" class="px-3 py-1 rounded-lg text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg">GET</span>
-              <span id="endpointPath" class="text-lg font-semibold text-white">/api/example</span>
-              <span class="text-neutral-400">•</span>
-              <span class="text-sm text-neutral-400">엔드포인트 설정</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
-                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                자동 저장됨
-              </div>
-              <button id="deleteEndpointBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
-                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                삭제
-              </button>
-            </div>
-          </div>
-        </div>
 
         <!-- Scrollable Content -->
         <div class="h-full overflow-y-auto p-6 pb-16 space-y-8">
 
           <!-- 기본 정보 -->
           <section class="neomorphic rounded-2xl p-6 space-y-6">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-3 h-3 rounded-full bg-gradient-to-r from-brand-400 to-brand-600 animate-pulse"></div>
-              <h3 class="text-xl font-bold text-white">기본 설정</h3>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-gradient-to-r from-brand-400 to-brand-600 animate-pulse"></div>
+                <h3 class="text-xl font-bold text-white">기본 설정</h3>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+                  <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  자동 저장됨
+                </div>
+                <button id="deleteEndpointBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+                  <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  삭제
+                </button>
+              </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div>
@@ -507,7 +503,7 @@
                 id="codeEditor"
                 class="w-full h-full p-6 bg-neutral-900/50 text-neutral-100 font-mono text-sm leading-relaxed resize-none border-none outline-none focus:ring-2 focus:ring-brand-500/20 backdrop-blur-sm"
                 spellcheck="false"
-                placeholder="여기에 프로젝트 코드를 입력하거나 붙여넣기 하세요...
+                placeholder='여기에 프로젝트 코드를 입력하거나 붙여넣기 하세요...
 
 예시 (JSON):
 {
@@ -526,7 +522,7 @@
       }
     }
   ]
-}"></textarea>
+}'></textarea>
             </div>
           </div>
 
@@ -633,13 +629,13 @@
         <!-- 빈 상태 -->
         <div id="versionEmpty" class="hidden h-full flex items-center justify-center p-12">
           <div class="text-center max-w-md">
-            <div class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-neutral-800 to-neutral-700 flex items-center justify-center">
               <svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
             </div>
-            <h4 class="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">버전 히스토리가 없습니다</h4>
-            <p class="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed">첫 번째 버전을 저장하여 프로젝트<br>변경사항을 추적해보세요</p>
+            <h4 class="text-xl font-semibold text-neutral-100 mb-2">버전 히스토리가 없습니다</h4>
+            <p class="text-neutral-400 text-sm leading-relaxed">첫 번째 버전을 저장하여 프로젝트<br>변경사항을 추적해보세요</p>
           </div>
         </div>
       </div>
@@ -648,6 +644,93 @@
 
   <!-- Toast -->
   <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 hidden z-[60]"></div>
+
+  <!-- API 명세서 내보내기 완료 모달 -->
+  <div id="exportModal" class="fixed inset-0 backdrop-blur-sm bg-black/60 hidden z-50 flex items-center justify-center p-6">
+    <div class="bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-700/50 w-full max-w-2xl transform transition-all duration-300 ease-out">
+
+      <!-- 헤더 -->
+      <div class="flex-shrink-0 px-8 py-6 bg-gradient-to-r from-cyan-950/40 to-blue-950/40 border-b border-cyan-800/30">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-neutral-100">API 명세서 내보내기 완료</h3>
+              <p class="text-sm text-neutral-400 mt-0.5">HTML 파일이 성공적으로 생성되었습니다</p>
+            </div>
+          </div>
+          <button id="closeExportModal" class="w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-neutral-200 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 내용 -->
+      <div class="p-8">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h4 class="text-lg font-semibold text-neutral-100 mb-2">성공적으로 내보내졌습니다!</h4>
+          <p class="text-neutral-400 text-sm">API 명세서가 HTML 파일로 저장되었습니다.</p>
+        </div>
+
+        <!-- 파일 정보 -->
+        <div class="bg-neutral-800/50 rounded-xl p-4 mb-6">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span class="text-sm font-medium text-neutral-300">생성된 파일</span>
+          </div>
+          <div class="text-xs text-neutral-400 mb-2">파일 경로:</div>
+          <div id="exportedFilePath" class="text-sm text-neutral-100 font-mono bg-neutral-900/50 px-3 py-2 rounded-lg break-all">
+            /path/to/api-docs.html
+          </div>
+        </div>
+
+        <!-- 사용 방법 -->
+        <div class="bg-gradient-to-r from-blue-950/30 to-cyan-950/30 rounded-xl p-4 border border-blue-800/30 mb-6">
+          <h5 class="text-sm font-semibold text-blue-300 mb-3">💡 사용 방법</h5>
+          <ul class="text-xs text-neutral-300 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 mt-0.5">•</span>
+              <span>생성된 HTML 파일을 웹 브라우저에서 열어보세요</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 mt-0.5">•</span>
+              <span>팀원들과 공유하거나 웹 서버에 배포할 수 있습니다</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 mt-0.5">•</span>
+              <span>모든 엔드포인트와 예시가 포함되어 있습니다</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 액션 버튼들 -->
+        <div class="flex gap-3">
+          <button id="openExportedFile" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-medium transition-all transform hover:scale-105 shadow-lg">
+            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            폴더 열기
+          </button>
+          <button id="closeExportModalBtn" class="px-4 py-3 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-neutral-300 hover:text-white text-sm font-medium transition-all">
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Keyboard Help Modal -->
   <dialog id="kbdModal" class="backdrop:bg-black/40 dark:backdrop:bg-black/60 rounded-2xl p-0 border-0 w-[520px] max-w-[92vw]">
@@ -770,14 +853,30 @@
     const $ = (s, root=document) => root.querySelector(s);
     const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 
-    const LS_KEY = 'mockfox.project.v1';
+    const LS_KEY = 'api-spec-project';
     const project = loadProject();
 
     function loadProject(){
+      console.log('=== loadProject 호출됨 ===');
+      console.log('사용하는 LS_KEY:', LS_KEY);
+
       const saved = localStorage.getItem(LS_KEY);
+      console.log('localStorage에서 가져온 원본:', saved);
+
       if(saved){
-        try { return JSON.parse(saved); } catch {}
+        try {
+          const parsed = JSON.parse(saved);
+          console.log('파싱된 프로젝트 데이터:', parsed);
+          console.log('로드된 엔드포인트 수:', parsed.endpoints?.length || 0);
+          if (parsed.endpoints && parsed.endpoints.length > 0) {
+            console.log('로드된 엔드포인트들:', parsed.endpoints.map(ep => ({ method: ep.method, path: ep.path })));
+          }
+          return parsed;
+        } catch (e) {
+          console.error('JSON 파싱 오류:', e);
+        }
       }
+      console.log('기본 프로젝트 데이터 반환');
       return { meta: { name: '', version: '', baseUrl: '', createdAt: Date.now() }, endpoints: [], selectedId: null };
     }
     function saveProject(){
@@ -796,15 +895,15 @@
     const baseUrl = $('#baseUrl');
 
     function initMeta(){
-      projectName.value = project.meta.name || '';
-      projectVersion.value = project.meta.version || '';
-      baseUrl.value = project.meta.baseUrl || '';
+      if (projectName) projectName.value = project.meta.name || '';
+      if (projectVersion) projectVersion.value = project.meta.version || '';
+      if (baseUrl) baseUrl.value = project.meta.baseUrl || '';
 
-      [projectName, projectVersion, baseUrl].forEach(el => {
+      [projectName, projectVersion, baseUrl].filter(el => el).forEach(el => {
         el.addEventListener('input', () => {
-          project.meta.name = projectName.value.trim();
-          project.meta.version = projectVersion.value.trim();
-          project.meta.baseUrl = baseUrl.value.trim();
+          if (projectName) project.meta.name = projectName.value.trim();
+          if (projectVersion) project.meta.version = projectVersion.value.trim();
+          if (baseUrl) project.meta.baseUrl = baseUrl.value.trim();
           saveProject();
         });
       });
@@ -832,7 +931,26 @@
       filtered.forEach(ep => {
         const isActive = project.selectedId === ep.id;
         const row = document.createElement('button');
-        row.className = `w-full text-left px-3 py-3 text-neutral-100 hover:bg-neutral-800 hover:text-white transition-colors ${isActive ? 'bg-brand-700/20 text-white' : ''}`;
+        row.className = `w-full text-left px-3 py-3 text-neutral-100 rounded-lg transition-all duration-200 ${isActive ? 'endpoint-active' : ''}`;
+
+        // 활성 상태일 때 강제로 스타일 적용
+        if (isActive) {
+          console.log('Active endpoint found:', ep.id, ep.path); // 디버깅용
+          row.style.backgroundColor = 'rgba(147, 51, 234, 0.2)';
+          row.style.border = '2px solid rgb(168, 85, 247)';
+          row.style.boxShadow = '0 10px 15px -3px rgba(147, 51, 234, 0.3)';
+          row.style.transform = 'scale(1.02)';
+        } else {
+          // 활성 상태가 아닐 때만 hover 이벤트 적용
+          row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(64, 64, 64, 0.5)';
+            this.style.border = '1px solid rgba(115, 115, 115, 0.5)';
+          });
+          row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.border = '';
+          });
+        }
         row.innerHTML = `<div class="flex items-center justify-between">
           <div class="min-w-0">
             <div class="text-xs font-medium truncate"><span class="me-2 inline-flex px-1.5 py-0.5 rounded border text-[10px] ${badgeClass(ep.method)}">${ep.method}</span>${ep.path || '<span class="text-neutral-400">/path</span>'}</div>
@@ -896,9 +1014,51 @@
           case 'responseBody': el.value = ep.responseBody; break;
         }
       });
+
+      // 헤더 정보 업데이트
+      updateHeader();
       updateCurl();
       renderExamples();
       updateJsonHealth();
+    }
+
+    function updateHeader(){
+      const ep = getSelected();
+      const methodBadge = $('#methodBadge');
+      const endpointPath = $('#endpointPath');
+
+      // 요소가 존재하지 않으면 함수 종료 (헤더가 제거됨)
+      if (!methodBadge || !endpointPath) {
+        return;
+      }
+
+      if(!ep){
+        methodBadge.textContent = 'GET';
+        methodBadge.className = 'px-3 py-1 rounded-lg text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg';
+        endpointPath.textContent = '/api/example';
+        return;
+      }
+
+      // 메서드 배지 업데이트
+      methodBadge.textContent = ep.method || 'GET';
+      const methodColors = {
+        'GET': 'from-emerald-500 to-green-500',
+        'POST': 'from-blue-500 to-sky-500',
+        'PUT': 'from-amber-500 to-orange-500',
+        'PATCH': 'from-indigo-500 to-purple-500',
+        'DELETE': 'from-red-500 to-rose-500',
+        'HEAD': 'from-neutral-500 to-slate-500',
+        'OPTIONS': 'from-neutral-500 to-slate-500'
+      };
+      const colorClass = methodColors[ep.method] || methodColors['GET'];
+      if (methodBadge) {
+        methodBadge.className = `px-3 py-1 rounded-lg text-sm font-bold bg-gradient-to-r ${colorClass} text-white shadow-lg`;
+      }
+
+      // 엔드포인트 경로 업데이트
+      if (endpointPath) {
+        endpointPath.textContent = ep.path || '/api/example';
+      }
     }
 
     function collectFromEditor(){
@@ -914,6 +1074,9 @@
       ep.headers = $('#headers').value;
       ep.requestBody = $('#requestBody').value;
       ep.responseBody = $('#responseBody').value;
+
+      // 헤더 정보 업데이트
+      updateHeader();
     }
 
     /** -----------------------------
@@ -1060,7 +1223,355 @@
       }
      }
 
-    function saveSilently(){ localStorage.setItem(LS_KEY, JSON.stringify(project)); renderProjectMeta(); }
+    function saveSilently(){
+      console.log('=== saveSilently 호출됨 ===');
+      console.log('저장할 프로젝트 데이터:', project);
+      console.log('저장할 엔드포인트 수:', project.endpoints?.length || 0);
+      if (project.endpoints && project.endpoints.length > 0) {
+        console.log('저장할 엔드포인트들:', project.endpoints.map(ep => ({ method: ep.method, path: ep.path })));
+      }
+      localStorage.setItem(LS_KEY, JSON.stringify(project));
+      console.log('localStorage에 저장 완료');
+      renderProjectMeta();
+    }
+
+    /** -----------------------------
+     * API 명세서 내보내기 모달 관련 함수들
+     * ------------------------------*/
+    let exportedFilePath = '';
+
+    function handleExportApiDocs() {
+      console.log('handleExportApiDocs 호출됨');
+
+      // localStorage 직접 확인
+      console.log('=== localStorage 원본 확인 ===');
+      const rawData = localStorage.getItem(LS_KEY);
+      console.log('원본 문자열:', rawData);
+
+      try {
+        const parsedData = JSON.parse(rawData || '{}');
+        console.log('파싱된 데이터:', parsedData);
+        console.log('저장된 엔드포인트들:', parsedData.endpoints);
+      } catch (e) {
+        console.error('파싱 오류:', e);
+      }
+
+      // 현재 메모리의 프로젝트 데이터 확인
+      console.log('=== 현재 메모리의 프로젝트 전체 ===');
+      console.log(project);
+      console.log('=== 메모리의 엔드포인트 목록 ===');
+      console.log(project.endpoints);
+
+      // 현재 선택된 엔드포인트 확인
+      const currentEndpoint = getSelected();
+      console.log('=== 현재 선택된 엔드포인트 ===');
+      console.log(currentEndpoint);
+
+      // UI에 실제로 표시되는 엔드포인트 목록 확인
+      console.log('=== UI 엔드포인트 목록 확인 ===');
+      const endpointListItems = document.querySelectorAll('#endpointList .endpoint-item');
+      console.log('UI에 표시된 엔드포인트 수:', endpointListItems.length);
+      endpointListItems.forEach((item, index) => {
+        const methodEl = item.querySelector('.method-badge');
+        const pathEl = item.querySelector('.endpoint-path');
+        console.log(`UI 엔드포인트 ${index}:`, {
+          method: methodEl?.textContent,
+          path: pathEl?.textContent
+        });
+      });
+
+      // 현재 메모리의 프로젝트 데이터를 직접 사용 (localStorage 불필요)
+      const currentProject = project;
+      const projectName = currentProject.name || '새 프로젝트';
+      const projectVersion = currentProject.version || 'v1.0.0';
+      const endpoints = currentProject.endpoints || [];
+
+      console.log('=== 최종 사용할 데이터 ===');
+      console.log({ projectName, projectVersion, endpoints });
+
+      // api-spec-project 데이터 구조에 맞게 변환
+      const projectData = {
+        name: projectName,
+        version: projectVersion,
+        endpoints: endpoints
+      };
+
+      console.log('=== 최종 변환된 데이터 ===');
+      console.log(projectData);
+
+      // 기존 양식의 generateSpecHTML 함수 직접 구현
+      const htmlContent = generateSpecHTML(projectData);
+
+      // 파일명 생성
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+      const fileName = `${projectName.replace(/[^a-zA-Z0-9]/g, '-')}-${timestamp}.html`;
+
+      console.log('생성된 파일명:', fileName);
+
+      // Mock 서버 생성과 100% 동일한 방식으로 IPC 호출
+      const payload = {
+        projectName: projectName,
+        fileName: fileName,
+        htmlContent: htmlContent
+      };
+
+      console.log('window.api 확인:', !!window.api);
+
+      if (window.api) {
+        console.log('IPC 전송 중...');
+        window.api.send('export-api-docs', payload);
+      } else {
+        console.warn('Electron 환경이 아닙니다.');
+      }
+    }
+
+    // Mock 서버 생성과 100% 동일한 방식으로 IPC 응답 처리
+    if (window.api) {
+      console.log('IPC 이벤트 리스너 등록 중...');
+      window.api.on('export-api-docs:done', (result) => {
+        console.log('export-api-docs:done 응답 받음:', result);
+        if (result.ok) {
+          exportedFilePath = result.path;
+          console.log('모달 표시 예정:', exportedFilePath);
+          showExportModal(exportedFilePath);
+        } else {
+          console.error('내보내기 실패:', result.err);
+          showToast(`내보내기 실패: ${result.err}`, 'error');
+        }
+      });
+    }
+
+    // 기존 export.js의 generateSpecHTML 함수를 그대로 구현
+    function generateSpecHTML(project) {
+      const style = `
+        <style>
+          :root{
+            --bg:#fafafa; --card:#fff; --muted:#6b7280; --border:#e5e7eb;
+            --ink:#0a0a0a; --ink-weak:#374151;
+            --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
+          }
+          *{box-sizing:border-box}
+          html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+          .container{max-width:1100px;margin:0 auto;padding:40px 24px}
+          h1{font-size:28px;margin:0 0 4px}
+          h2{font-size:20px;margin:24px 0 12px}
+          .muted{color:var(--muted)}
+          .sec{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin:16px 0}
+          pre{background:#f6f6f6;padding:12px;border-radius:12px;overflow:auto;margin:8px 0 0;white-space:pre-wrap;word-break:break-word}
+          code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+          .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+          .method{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+          .GET{background:#d1fae5;color:#065f46}
+          .POST{background:#dbeafe;color:#1e40af}
+          .PUT{background:#fde68a;color:#92400e}
+          .PATCH{background:#e9d5ff;color:#6b21a8}
+          .DELETE{background:#fecaca;color:#991b1b}
+          .path{font-weight:600}
+          .tag{font-size:12px;color:var(--muted)}
+          .kv{width:100%;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+          .kv table{border-collapse:collapse;width:100%}
+          .kv th,.kv td{font-size:13px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+          .kv th{width:180px;color:var(--ink-weak);background:#fafafa}
+          .pill{display:inline-block;border:1px solid var(--border);padding:2px 8px;border-radius:999px;font-size:12px;margin-right:6px}
+          .status{padding:2px 8px;border-radius:8px;background:#eef2ff;font-weight:600;margin-right:6px}
+          .status.ok{background:#ecfdf5;color:#065f46}
+          .status.warn{background:#fffbeb;color:#92400e}
+          .status.err{background:#fef2f2;color:#991b1b}
+          .toc{position:sticky;top:0;background:var(--bg);padding:12px 0 16px;margin:12px 0;border-bottom:1px dashed var(--border)}
+          .toc a{color:#2563eb;text-decoration:none;margin-right:10px;font-size:13px}
+          .empty{color:var(--muted)}
+
+          /* 엔드포인트 접기/펼치기 카드 */
+          details.ep{border:1px solid var(--border);border-radius:16px;background:var(--card);margin:16px 0}
+          details.ep > summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:center;padding:14px 16px}
+          details.ep > summary::-webkit-details-marker{display:none}
+          details.ep[open] > summary{border-bottom:1px solid var(--border)}
+          summary .chev{transition:transform .15s ease}
+          details[open] .chev{transform:rotate(90deg)}
+          summary:hover{background:#f8fafc}
+        </style>`;
+
+      // 데이터 정규화 & 정렬
+      const endpoints = (project?.endpoints || []).map(e => ({
+        ...e,
+        method: (e.method || "GET").toUpperCase(),
+        path: e.path || "/"
+      })).sort((a,b) => (a.path === b.path ? a.method.localeCompare(b.method) : a.path.localeCompare(b.path)));
+
+      // TOC
+      const toc = endpoints.map(ep => {
+        const id = sectionId(ep);
+        return '<a href="#' + id + '"><span class="pill ' + ep.method + '">' + ep.method + '</span><code>' + escapeHtml(ep.path) + '</code></a>';
+      }).join("");
+
+      const epHtml = endpoints.map(ep => renderEndpoint(ep)).join("");
+      const updated = project?.updatedAt ? new Date(project.updatedAt) : new Date();
+
+      let html = '<!doctype html><html><head><meta charset="utf-8">';
+      html += '<title>' + escapeHtml(project?.name || "API Spec") + '</title>';
+      html += style;
+      html += '</head><body><div class="container">';
+      html += '<h1>' + escapeHtml(project?.name || "API Spec") + '</h1>';
+      html += '<div class="muted">Version ' + escapeHtml(project?.version || "v1.0.0") + ' · Updated ' + updated.toLocaleString() + '</div>';
+      html += '<div class="toc">' + toc;
+      html += '<span style="float:right">';
+      html += '<button onclick="window.__toggleAll(true)" class="pill">모두 펼치기</button>';
+      html += '<button onclick="window.__toggleAll(false)" class="pill">모두 접기</button>';
+      html += '</span></div>';
+      html += epHtml;
+      html += '</div>';
+      html += '<scr' + 'ipt>window.__toggleAll = function(open){document.querySelectorAll("details.ep").forEach(d => d.open = !!open);};</scr' + 'ipt>';
+      html += '</body></html>';
+      return html;
+    }
+
+    function sectionId(ep) {
+      return (ep.method || 'get').toLowerCase() + '-' + (ep.path || '').replace(/[^a-zA-Z0-9]/g, '-');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function(char) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[char];
+      });
+    }
+
+    function renderEndpoint(ep) {
+      const id = sectionId(ep);
+      const tags = ep.tags?.length ? '<span class="tag"> · ' + ep.tags.slice(0,5).join(" · ") + '</span>' : "";
+      const responses = normalizeResponses(ep);
+
+      return '<details id="' + id + '" class="ep" open><summary><span class="chev">▶</span><span class="method ' + ep.method + '">' + ep.method + '</span><span class="path"><code>' + escapeHtml(ep.path) + '</code></span>' + tags + '</summary><div style="padding:12px 16px 16px">' + (ep.description ? '<p style="margin:0 0 16px;color:var(--ink-weak)">' + escapeHtml(ep.description) + '</p>' : '') + renderSection("Headers", ep.headers) + renderSection("Query", ep.query) + renderSection("Request Body", ep.body) + renderResponseSection(responses) + '</div></details>';
+    }
+
+    function normalizeResponses(ep) {
+      if (ep.responses?.length) return ep.responses;
+      if (ep.responseBody || ep.responseStatus) {
+        return [{
+          status: ep.responseStatus || 200,
+          body: ep.responseBody,
+          contentType: 'application/json'
+        }];
+      }
+      return [{status: 200, contentType: 'application/json'}];
+    }
+
+    function renderSection(title, data) {
+      return '<details class="sec" open><summary><h2>' + title + '</h2></summary>' + (data ? renderData(data) : '<div class="empty">—</div>') + '</details>';
+    }
+
+    function renderResponseSection(responses) {
+      let html = '<details class="sec" open><summary><h2>Responses</h2></summary>';
+      responses.forEach(resp => {
+        const statusClass = resp.status < 300 ? 'ok' : resp.status < 400 ? 'warn' : 'err';
+        html += '<div style="margin:12px 0"><span class="status ' + statusClass + '">' + resp.status + '</span>';
+        if (resp.contentType) html += '<span class="pill"><code>' + escapeHtml(resp.contentType) + '</code></span>';
+        if (resp.desc) html += '<span class="tag">' + escapeHtml(resp.desc) + '</span>';
+        if (resp.body) html += '<pre>' + escapeHtml(typeof resp.body === 'string' ? resp.body : JSON.stringify(resp.body, null, 2)) + '</pre>';
+        html += '</div>';
+      });
+      html += '</details>';
+      return html;
+    }
+
+    function renderData(data) {
+      if (!data || data === '{}' || data === '[]') return '<div class="empty">—</div>';
+      try {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) && Object.keys(parsed).length > 0) {
+          return '<div class="kv"><table>' + Object.entries(parsed).map(([k,v]) => '<tr><th>' + escapeHtml(k) + '</th><td><code>' + escapeHtml(String(v)) + '</code></td></tr>').join('') + '</table></div>';
+        }
+        return '<pre>' + escapeHtml(typeof data === 'string' ? data : JSON.stringify(parsed, null, 2)) + '</pre>';
+      } catch {
+        return '<pre>' + escapeHtml(String(data)) + '</pre>';
+      }
+    }
+
+    function showExportModal(filePath) {
+      console.log('showExportModal 실행됨, filePath:', filePath); // 디버그 로그
+
+      const modal = $('#exportModal');
+      const filePathEl = $('#exportedFilePath');
+
+      console.log('modal 요소:', modal); // 디버그 로그
+      console.log('filePathEl 요소:', filePathEl); // 디버그 로그
+
+      if (filePathEl) {
+        filePathEl.textContent = filePath;
+        console.log('파일경로 설정됨:', filePath); // 디버그 로그
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        console.log('모달 표시됨'); // 디버그 로그
+
+        // 애니메이션을 위한 초기 상태
+        const modalContent = modal.querySelector('div');
+        if (modalContent) {
+          modalContent.style.transform = 'scale(0.95) translateY(20px)';
+          modalContent.style.opacity = '0';
+        }
+
+        // 애니메이션 시작
+        requestAnimationFrame(() => {
+          if (modalContent) {
+            modalContent.style.transform = 'scale(1) translateY(0)';
+            modalContent.style.opacity = '1';
+          }
+        });
+      }
+    }
+
+    function closeExportModal() {
+      const modal = $('#exportModal');
+      if (modal) {
+        const modalContent = modal.querySelector('div');
+
+        // 닫기 애니메이션
+        if (modalContent) {
+          modalContent.style.transform = 'scale(0.95) translateY(20px)';
+          modalContent.style.opacity = '0';
+        }
+
+        // 애니메이션 완료 후 숨김
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }, 150);
+      }
+    }
+
+    async function openExportedFile() {
+      if (exportedFilePath) {
+        console.log('폴더 열기 시도:', exportedFilePath);
+
+        if (window.api) {
+          try {
+            // 목서버와 동일한 방식으로 폴더 열기
+            const success = await window.api.invoke('open-build-folder', { path: exportedFilePath });
+            if (success) {
+              showToast('폴더가 열렸습니다', 'success');
+            } else {
+              showToast('폴더 열기에 실패했습니다', 'error');
+            }
+          } catch (error) {
+            console.error('폴더 열기 오류:', error);
+            showToast('폴더 열기 중 오류가 발생했습니다', 'error');
+          }
+        } else {
+          console.warn('Electron 환경이 아닙니다.');
+          showToast('Electron 환경에서만 지원됩니다', 'error');
+        }
+
+        closeExportModal();
+      }
+    }
 
     /** -----------------------------
      * Samples & Format buttons
@@ -1089,15 +1600,32 @@
     /** -----------------------------
      * Actions
      * ------------------------------*/
-    $('#addEndpointBtn').addEventListener('click', addEndpoint);
-    $('#deleteEndpointBtn').addEventListener('click', deleteEndpoint);
-    $('#saveBtn').addEventListener('click', () => {
+    $('#addEndpointBtn')?.addEventListener('click', addEndpoint);
+    $('#deleteEndpointBtn')?.addEventListener('click', deleteEndpoint);
+    $('#saveBtn')?.addEventListener('click', () => {
       collectFromEditor();
       saveProject();
       showToast('저장 완료!', 'success');
     });
-    $('#searchInput').addEventListener('input', renderList);
+    $('#searchInput')?.addEventListener('input', renderList);
     $('#keyboardHelpBtn')?.addEventListener('click', () => $('#kbdModal').showModal());
+
+    // 메서드와 엔드포인트 필드 실시간 업데이트
+    $('#method')?.addEventListener('change', () => { collectFromEditor(); saveSilently(); });
+    $('#endpoint')?.addEventListener('input', () => { collectFromEditor(); saveSilently(); });
+
+    // API 명세서 내보내기 모달 관련 이벤트
+    $('#exportHtmlBtn')?.addEventListener('click', handleExportApiDocs);
+    $('#closeExportModal')?.addEventListener('click', closeExportModal);
+    $('#closeExportModalBtn')?.addEventListener('click', closeExportModal);
+    $('#openExportedFile')?.addEventListener('click', openExportedFile);
+
+    // 모달 외부 클릭 시 닫기
+    $('#exportModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'exportModal') {
+        closeExportModal();
+      }
+    });
 
     // global shortcuts
     window.addEventListener('keydown', (e)=>{
@@ -1122,7 +1650,7 @@
     });
 
 
-    function escapeHtml(s){ return String(s).replace(`/[&<>"]g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c])`); }
+    function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
     /** -----------------------------
      * Dark mode only setup

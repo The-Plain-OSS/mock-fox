@@ -67,7 +67,38 @@ app.whenReady().then(() => {
 
   // IPC 리스너 
   
-  /* --------- 3) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출) --------- */
+  /* --------- 3) API 명세서 내보내기 핸들러 --------- */
+  ipcMain.on("export-api-docs", async (event, payload) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    try {
+      const projectName = payload?.projectName || "API-Documentation";
+      const fileName = payload?.fileName || "api-docs.html";
+      const htmlContent = payload?.htmlContent || "";
+
+      // 저장 위치 먼저 물어봄
+      const { canceled, filePath } = await dialog.showSaveDialog(win, {
+        title: "API 명세서 저장",
+        defaultPath: fileName,
+        filters: [
+          { name: 'HTML 파일', extensions: ['html'] }
+        ]
+      });
+
+      if (canceled || !filePath) {
+        event.sender.send("export-api-docs:done", { ok: false, err: "사용자 취소" });
+        return;
+      }
+
+      // HTML 파일 저장
+      writeFileSync(filePath, htmlContent, 'utf8');
+
+      event.sender.send("export-api-docs:done", { ok: true, path: filePath });
+    } catch (err) {
+      event.sender.send("export-api-docs:done", { ok: false, err: String(err?.message || err) });
+    }
+  });
+
+  /* --------- 4) 빌드 핸들러 (렌더러에서 ipc.send('build-mock', ...) 호출) --------- */
   // linux 비지원: 안전하게 차단
   ipcMain.on("build-mock", async (event, payload) => {
     const win = BrowserWindow.fromWebContents(event.sender);
@@ -201,13 +232,8 @@ function getBundledGoEnv(targetOS, targetArch) {
 
 /* --------- 2) 입력 스펙 → Go main 코드 생성 --------- */
 function generateGoMain(projectName, endpointsRaw) {
-  // method+path 중복은 마지막으로 정의된 것만 반영
-  const map = new Map();
-  for (const ep of endpointsRaw || []) {
-    const key = `${(ep.method || "GET").toUpperCase()} ${ep.path || "/"}`;
-    map.set(key, ep);
-  }
-  const endpoints = [...map.values()];
+  // 같은 경로에 여러 메서드가 있을 수 있으므로 중복 제거 로직 제거
+  const endpoints = endpointsRaw || [];
   const spec = endpoints.map(ep => ({
     id: ep.id,
     method: (ep.method || "GET").toUpperCase(),
@@ -252,12 +278,27 @@ func main() {
   var eps []EP
   _ = json.Unmarshal([]byte(${JSON.stringify(specJson)}), &eps)
 
+  // 경로별로 엔드포인트들을 그룹화
+  pathEndpoints := make(map[string][]EP)
+  for _, ep := range eps {
+    pathEndpoints[ep.Path] = append(pathEndpoints[ep.Path], ep)
+  }
+
   mux := http.NewServeMux()
 
-  for _, e := range eps {
-    ep := e // 클로저 캡처 방지
-    mux.HandleFunc(ep.Path, func(w http.ResponseWriter, r *http.Request) {
-      if r.Method != ep.Method {
+  for path, endpointList := range pathEndpoints {
+    endpoints := endpointList // 클로저 캡처용
+    mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+      // 현재 요청 메서드에 맞는 엔드포인트 찾기
+      var ep *EP = nil
+      for i := range endpoints {
+        if endpoints[i].Method == r.Method {
+          ep = &endpoints[i]
+          break
+        }
+      }
+
+      if ep == nil {
         w.WriteHeader(http.StatusMethodNotAllowed)
         return
       }
