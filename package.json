@@ -6,13 +6,14 @@
   "type": "module",
   "main": "electron-main.js",
   "build": {
+    "compression": "store",
     "files": [
       "electron-main.js",
       "preload.cjs",
       "index.html",
       "description.html",
       "assets/**",
-      "dist/**"
+      "js/**"
     ],
     "mac": {
       "target": ["pkg"],
@@ -31,20 +32,20 @@
         }
       ],
       "artifactName": "${productName}-${version}.${ext}",
-      "icon": "build/icon.ico",
       "forceCodeSigning": false,
       "signAndEditExecutable": false,
       "signExts": [],
       "extraResources": [
         { "from": "resources/windows-amd64", "to": "resources/windows-amd64" }
       ]
+
     }
   },
   "scripts": {
     "start": "electron .",
     "build:mac": "electron-builder --mac pkg",
-    "build:win": "electron-builder --win portable",
-    "build:win:release": "electron-builder --win portable --publish=never",
+    "build:win": "electron-builder --win portable --x64",
+    "build:win:release": "electron-builder --win --x64 --publish=never",
     "build:mac:x64": "electron-builder --mac pkg --x64",
     "build:mac:arm64": "electron-builder --mac pkg --arm64",
     "release": "electron-builder --win portable --publish=always"

@@ -5,11 +5,11 @@
 import { toKebab } from "./state.js";
 
 export function downloadFile(filename, content, mime){
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+  // Use the existing IPC channel to save the file securely via the main process.
+  window.api.send("export-api-docs", {
+    fileName: filename,
+    htmlContent: content
+  });
 }
 
 export function generateSpecHTML(project){
