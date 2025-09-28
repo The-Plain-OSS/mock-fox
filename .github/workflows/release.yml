@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v2.0.0)'
+        required: true
+        default: 'v2.0.0'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Prepare Go resources
+      run: |
+        mkdir -p resources/windows-amd64/bin
+        go version
+        # Go 바이너리 복사 (실제 환경에서는 Go 툴체인 전체를 포함해야 함)
+
+    - name: Build Windows installer
+      run: npm run build:win
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        release_name: Mock Fox ${{ github.event.inputs.version || github.ref_name }}
+        body: |
+          ## 🚀 Mock Fox ${{ github.event.inputs.version || github.ref_name }}
+
+          ### 다운로드
+          - **Windows 사용자**: 아래 `Mock-Fox-*-Setup.exe` 파일을 다운로드하여 설치하세요.
+
+          ### 설치 방법
+          1. Setup.exe 파일 다운로드
+          2. 다운로드한 파일 실행
+          3. 설치 마법사를 따라 진행
+          4. 바탕화면 또는 시작 메뉴에서 Mock Fox 실행
+
+          ### 주요 기능
+          - API 명세 작성 및 Mock 서버 생성
+          - 실행 가능한 독립 서버 파일 출력
+          - HTML 명세서 자동 생성
+          - 템플릿 시스템으로 빠른 시작
+
+          ### 시스템 요구사항
+          - Windows 10 이상 (x64)
+          - 별도 런타임 설치 불필요
+        draft: false
+        prerelease: false
+
+    - name: Upload Windows Installer
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/Mock-Fox-*-Setup.exe
+        asset_name: Mock-Fox-${{ github.event.inputs.version || github.ref_name }}-Setup.exe
+        asset_content_type: application/octet-stream

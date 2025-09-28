@@ -24,23 +24,38 @@
       ]
     },
     "win": {
-      "target": ["nsis"],
-      "artifactName": "${productName}-${version}-win-${arch}.${ext}",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-Setup.${ext}",
       "icon": "build/icon.ico",
       "forceCodeSigning": false,
       "signAndEditExecutable": false,
       "signExts": [],
       "extraResources": [
         { "from": "resources/windows-amd64", "to": "resources/windows-amd64" }
-      ]
+      ],
+      "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "Mock Fox",
+        "include": "build/installer.nsh"
+      }
     }
   },
   "scripts": {
     "start": "electron .",
     "build:mac": "electron-builder --mac pkg",
     "build:win": "electron-builder --win nsis",
+    "build:win:release": "electron-builder --win nsis --publish=never",
     "build:mac:x64": "electron-builder --mac pkg --x64",
-    "build:mac:arm64": "electron-builder --mac pkg --arm64"
+    "build:mac:arm64": "electron-builder --mac pkg --arm64",
+    "release": "electron-builder --win nsis --publish=always"
   },
   "devDependencies": {
     "electron": "^37.3.0",
