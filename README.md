@@ -13,16 +13,6 @@
 
 **Design REST APIs and generate standalone mock servers with a single click.**
 
-<<<<<<< HEAD
-Mock Fox is a local-first desktop app for designing RESTful API specifications and generating executable mock servers. No cloud dependencies, no runtime installations, no complex setup—just design your API and click to build.
-=======
-- **한 번의 클릭으로 실행 가능한 Mock 서버 생성**
-- **API 명세 HTML 문서 자동 생성** (공유 및 문서화용)
-- **독립 실행 파일(.exe) 출력** – 별도 런타임 불필요
-- **아주 쉬운 엔드포인트 정의**
-- **오픈소스 API 템플릿**
->>>>>>> 9b6d4340b682ea933d9f308bd28e269593f17041
-
 **Note**: The UI is currently available in Korean only. English localization is in progress.
 
 ### Key Features
