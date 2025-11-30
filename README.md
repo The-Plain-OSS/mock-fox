@@ -42,21 +42,8 @@
 
 ### Installation
 
-#### Pre-Built Binaries (Recommended)
 
-**[Download Latest Release](https://github.com/The-Plain-OSS/mock-fox/releases)**
-
-- **Windows**: Download `Mock-Fox-R2.0.0.exe` and run directly
-- **macOS**: Coming soon
-
-##### Windows Setup
-
-1. Download `Mock-Fox-*.exe` from releases
-2. Save to any folder
-3. Double-click to run (Windows SmartScreen may warn: click "More info" → "Run anyway")
-4. No installation required
-
-#### Build from Source
+#### Build from Source(Recommended)
 
 **Requirements**: Node.js 18.x LTS or higher
 
@@ -75,6 +62,21 @@ npm start
 npm run build:mac    # macOS
 npm run build:win    # Windows
 ```
+
+#### Pre-Built Binaries
+
+**[Download Latest Release](https://github.com/The-Plain-OSS/mock-fox/releases)**
+
+- **Windows**: Download `Mock-Fox-R2.0.0.exe` and run directly
+- **macOS**: Coming soon
+
+##### Windows Setup
+
+1. Download `Mock-Fox-*.exe` from releases
+2. Save to any folder
+3. Double-click to run (Windows SmartScreen may warn: click "More info" → "Run anyway")
+4. No installation required
+
 
 ### Quick Start
 
@@ -313,7 +315,7 @@ Mock Fox는 RESTful API 명세를 작성하고 실행 가능한 Mock 서버를 �
 
 #### 고급 기능
 
-- **템플릿** - 미리 만들어진 API 예제로 빠른 시작
+- **오픈소스 템플릿** - 미리 만들어진 API 예제로 빠른 시작
 - **버전 관리** - 변경 이력 추적 및 롤백
 - **코드 모드** - JSON 자동 포맷팅 및 검증
 - **응답 시나리오** - 엔드포인트당 여러 응답 예시 설정
@@ -328,21 +330,7 @@ Mock Fox는 RESTful API 명세를 작성하고 실행 가능한 Mock 서버를 �
 
 ### 설치 방법
 
-#### 사전 빌드된 바이너리 (권장)
-
-**[최신 릴리즈 다운로드](https://github.com/The-Plain-OSS/mock-fox/releases)**
-
-- **Windows**: `Mock-Fox-R2.0.0.exe` 다운로드 후 바로 실행
-- **macOS**: 준비 중
-
-##### Windows 설치
-
-1. 릴리즈에서 `Mock-Fox-*.exe` 다운로드
-2. 원하는 폴더에 저장
-3. 더블클릭으로 실행 (Windows SmartScreen 경고 시 "추가 정보" → "실행" 클릭)
-4. 별도 설치 과정 없음
-
-#### 소스코드에서 빌드
+#### 소스코드에서 빌드 (권장)
 
 **요구 사항**: Node.js 18.x LTS 이상
 
@@ -361,6 +349,22 @@ npm start
 npm run build:mac    # macOS
 npm run build:win    # Windows
 ```
+
+
+#### 사전 빌드된 바이너리
+**[최신 릴리즈 다운로드](https://github.com/The-Plain-OSS/mock-fox/releases)**
+
+- **Windows**: `Mock-Fox-R2.0.0.exe` 다운로드 후 바로 실행
+- **macOS**: 준비 중
+
+##### Windows 설치
+
+1. 릴리즈에서 `Mock-Fox-*.exe` 다운로드
+2. 원하는 폴더에 저장
+3. 더블클릭으로 실행 (Windows SmartScreen 경고 시 "추가 정보" → "실행" 클릭)
+4. 별도 설치 과정 없음
+
+
 
 ### 빠른 시작
 
